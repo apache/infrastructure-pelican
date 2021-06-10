@@ -52,3 +52,6 @@ popd
 # These files/dir may need a reference with LD_LIBRARY_PATH.
 # gfm.py wants this lib/ in LIBCMARKLOCATION.
 ls -laF "$EXTRACTED_AS/lib/"
+
+# Provide a handy line for copy/paste.
+echo "export LIBCMARKDIR='$(pwd)/$EXTRACTED_AS/lib'"
