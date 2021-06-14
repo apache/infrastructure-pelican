@@ -28,4 +28,8 @@ _TBD: maybe Windows?_
 
 ## Step Two
 
-_TBD_
+_TBD: credentials need to provided in (eg.) bb2.txt_
+
+```
+$ ./kick_build.py --repo=www-site --notify=somewhere@example.com --theme theme/apache --min-pages=200
+```
