@@ -7,7 +7,7 @@ import requests
 
 # Where are the credentials stored?
 ### parameterize this?
-CREDS_FNAME = '/x1/gitbox/auth/bb2.txt'
+CREDS_FNAME = '/x1/buildmaster/master1/kickbuild.txt'
 #CREDS_FNAME = 'bb2.txt'
 
 # LDAP to CNAME mappings for some projects
