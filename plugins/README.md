@@ -2,12 +2,15 @@
 
 ## asfgenid
 
-_TBD_
+Generates HeadingIDs, ElementID, and PermaLinks
 
 ## asfreader
 
-_TBD_
+Pelican plugin that processes ezt template Markdown through ezt and then GitHub Flavored Markdown.
 
 ## toc
 
-_TBD_
+Generates Table of Contents for markdown.
+Only generates a ToC for the headers FOLLOWING the [TOC] tag,
+so you can insert it after a specific section that need not be
+include in the ToC.
