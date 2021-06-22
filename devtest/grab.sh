@@ -1,4 +1,8 @@
 #!/bin/bash
+#
+# $ mkdir confs ; cd confs
+# $ .../grab.sh
+#
 
 # https://github.com/search?p=2&q=org%3Aapache+filename%3Apelicanconf.py&type=Code
 sites='template-site
