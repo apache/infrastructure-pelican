@@ -16,6 +16,10 @@ import time
 import fcntl
 import venv
 import glob
+import datetime
+
+import yaml
+import ezt
 
 
 # Command definitions - put into a conf later on?
@@ -27,11 +31,17 @@ SCRATCH_DIR     = '/tmp'
 VERSION         = '0.28.3.gfm.12'
 LIBCMARKDIR     = f'/usr/local/asfpackages/cmark-gfm/cmark-gfm-{VERSION}/lib'
 if not os.path.exists(LIBCMARKDIR):
+    # Fail, if a path to the CMARK library is not in ENVIRON.
     LIBCMARKDIR = os.environ['LIBCMARKDIR']
 
 THIS_DIR        = os.path.abspath(os.path.dirname(__file__))
 
 IS_PRODUCTION   = os.path.exists(PELICANFILES)
+
+# Automatic settings filenames
+AUTO_SETTINGS_YAML = 'pelicanconf.yaml'
+AUTO_SETTINGS_TEMPLATE = 'pelican.auto.ezt'
+AUTO_SETTINGS = 'pelican.auto.py'
 
 
 def start_build(args):
@@ -49,23 +59,19 @@ def start_build(args):
     subprocess.run((GIT, 'clone', '--branch', args.sourcebranch, args.source, sourcepath),
                    check=True)
 
-    # Activate venv and install pips if needed
-    if os.path.exists(os.path.join(sourcepath, 'requirements.txt')):
+    # Activate venv and install pips if needed. For dev/test, we will
+    # assume that all requirements are available at the system level,
+    # rather than needing to install them into the venv.
+    ### note: this makes it difficult to test requirements.txt, but it
+    ### will do for now. Debugging requirements.txt failures on the
+    ### production buildbot is not difficult to correct.
+    if IS_PRODUCTION and os.path.exists(os.path.join(sourcepath, 'requirements.txt')):
         print("Installing pips")
         subprocess.run(('/bin/bash', '-c',
                         'source bin/activate; pip3 install -r source/requirements.txt'),
                        cwd=path, check=True)
     else:
         print("No requirements.txt found, skipping pip")
-
-    # Set currently supported plugins
-    with open(os.path.join(sourcepath, 'pelicanconf.py'), 'a') as f:
-        f.write("""
-try:
-    PLUGINS += ['toc']
-except:
-    PLUGINS = ['toc', 'pelican-gfm']
-""")
 
     # Where are our tools?
     if IS_PRODUCTION:
@@ -74,14 +80,28 @@ except:
         tool_dir = THIS_DIR
     print("TOOLS:", tool_dir)
 
-    # Copy GFM plugin
-    if os.path.isdir(os.path.join(sourcepath, 'theme')):
-        shutil.copytree(os.path.join(tool_dir, 'pelican-gfm'), os.path.join(sourcepath, 'theme/plugins/pelican-gfm'))
-        shutil.copyfile(os.path.join(tool_dir, 'toc.py'), os.path.join(sourcepath, 'theme/plugins/toc.py'))
-    if os.path.isdir(os.path.join(sourcepath, 'plugins')):
-        shutil.copytree(os.path.join(tool_dir, 'pelican-gfm'), os.path.join(sourcepath, 'plugins/pelican-gfm'))
-        shutil.copyfile(os.path.join(tool_dir, 'toc.py'), os.path.join(sourcepath, 'plugins/toc.py'))
-    
+    pelconf_yaml = os.path.join(sourcepath, AUTO_SETTINGS_YAML)
+    if os.path.exists(pelconf_yaml):
+        settings_path = os.path.join(path, AUTO_SETTINGS)
+        builtin_p_paths = [
+            os.path.join(tool_dir, os.pardir),  ### find gfm.py in current location
+            os.path.join(tool_dir, os.pardir, 'plugins'),
+            ]
+        generate_settings(pelconf_yaml, settings_path, builtin_p_paths, sourcepath)
+    else:
+        # The default name, but we'll pass it explicitly.
+        settings_path = os.path.join(sourcepath, 'pelicanconf.py')
+
+        # Set currently supported plugins
+        ### this needs to be removed, as it is too indeterminate.
+        with open(settings_path, 'a') as f:
+            f.write("""
+try:
+    PLUGINS += ['toc']
+except:
+    PLUGINS = ['toc', 'gfm']
+""")
+
     # Call pelican
     buildpath = os.path.join(path, 'build/output')
     os.makedirs(buildpath, exist_ok = True)
@@ -93,7 +113,9 @@ except:
         print("No theme dir specified or default not present, trying with no theme specified...")
         tdir = ''
     buildcmd = ('/bin/bash', '-c',
-                'source bin/activate; cd source && (pelican content %s -o %s)' % (tdir, buildpath),
+                'source bin/activate; cd source && '
+                ### note: adding --debug can be handy
+                f'(pelican content --settings {settings_path} {tdir} -o {buildpath})',
                 )
     print("Building web site with:", buildcmd)
     env = os.environ.copy()
@@ -158,6 +180,21 @@ except:
 
     print("Web site generated and published successfully!")
     
+
+def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath='.'):
+    ydata = yaml.safe_load(open(source_yaml))
+
+    tdata = ydata['site']  # Easy to copy these simple values.
+    tdata.update({
+        'year': datetime.date.today().year,
+        'p_paths': builtin_p_paths + [ os.path.join(sourcepath, p) for p in ydata['plugins']['paths'] ],
+        'use': ydata['plugins']['use'],
+        'static': ydata['static'],
+        })
+
+    t = ezt.Template(os.path.join(THIS_DIR, AUTO_SETTINGS_TEMPLATE))
+    t.generate(open(settings_path, 'w'), tdata)
+
 
 def main():
     #os.chdir('/tmp/nowhere')  ### DEBUG: make sure we aren't reliant on cwd

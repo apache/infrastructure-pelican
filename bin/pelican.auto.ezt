@@ -1,0 +1,29 @@
+[# TEMPLATE for dynamic construction of a settings file for Pelican. ]
+
+# Basic information about the site.
+SITENAME = '[name]'
+SITEDESC = '[description]'
+SITEDOMAIN = '[domain]'
+SITEURL = 'https://[domain]'
+SITELOGO = 'https://[domain]/[logo]'
+SITEREPOSITORY = '[repository]'
+CURRENTYEAR = [year]
+TRADEMARKS = '[trademarks]'
+
+# Specify location of plugins, and which to use
+PLUGIN_PATHS = [[] [for p_paths]'[p_paths]', [end]]
+PLUGINS = [[] [for use]'[use]', [end]]
+
+# Copy without processing
+STATIC_PATHS = [[] [for static]'[static]', [end]]
+
+# Where to place/link generated pages
+PAGE_SAVE_AS = '{slug}.html'
+
+# Disable unused Pelican features
+FEED_ALL_ATOM = None
+INDEX_SAVE_AS = ''
+TAGS_SAVE_AS = ''
+CATEGORIES_SAVE_AS = ''
+AUTHORS_SAVE_AS = ''
+ARCHIVES_SAVE_AS = ''
