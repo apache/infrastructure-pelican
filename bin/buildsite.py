@@ -84,7 +84,6 @@ def start_build(args):
     if os.path.exists(pelconf_yaml):
         settings_path = os.path.join(path, AUTO_SETTINGS)
         builtin_p_paths = [
-            os.path.join(tool_dir, os.pardir),  ### find gfm.py in current location
             os.path.join(tool_dir, os.pardir, 'plugins'),
             ]
         generate_settings(pelconf_yaml, settings_path, builtin_p_paths, sourcepath)
