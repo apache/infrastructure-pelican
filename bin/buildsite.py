@@ -209,6 +209,9 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
 
         tdata['uses_genid'] = 'yes'  # ezt.boolean()
         tdata['genid'] = genid
+
+        # Add the plugin.
+        tdata['use'].append('asfgenid')
     else:
         tdata['uses_genid'] = None
 
