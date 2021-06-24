@@ -32,7 +32,10 @@ import pelican.plugins.signals
 import pelican.readers
 import pelican.settings
 
-GFMReader = sys.modules['pelican-gfm.gfm'].GFMReader
+# The gfm plugin should have been loaded before this one.
+### TODO: maybe buildsite.py can sort gfm to the front of the list.
+import gfm
+
 
 METADATA_RE = re.compile(r'\[{\s*(?P<meta>[-._:a-zA-Z0-9\[\]]+)\s*}\]')
 
@@ -51,7 +54,7 @@ class ASFTemplateReader(ezt.Reader):
         return self.fname
 
 
-class ASFReader(GFMReader):
+class ASFReader(gfm.GFMReader):
     """GFM-flavored Reader for the Pelican system that adds ASF data and ezt
     generation prior to processing the GFM
     """
