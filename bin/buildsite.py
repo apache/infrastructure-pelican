@@ -191,6 +191,27 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         'static': ydata['static'],
         })
 
+    if 'genid' in ydata:
+        class GenIdParams:
+            def setbool(self, name):
+                setattr(self, name, str(ydata['genid'][name]))
+            def setdepth(self, name):
+                setattr(self, name, ydata['genid'].get(name))
+
+        genid = GenIdParams()
+        genid.setbool('unsafe')
+        genid.setbool('metadata')
+        genid.setbool('elements')
+        genid.setbool('permalinks')
+        genid.setbool('tables')
+        genid.setdepth('headings_depth')
+        genid.setdepth('toc_depth')
+
+        tdata['uses_genid'] = 'yes'  # ezt.boolean()
+        tdata['genid'] = genid
+    else:
+        tdata['uses_genid'] = None
+
     t = ezt.Template(os.path.join(THIS_DIR, AUTO_SETTINGS_TEMPLATE))
     t.generate(open(settings_path, 'w'), tdata)
 

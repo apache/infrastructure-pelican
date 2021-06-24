@@ -27,3 +27,27 @@ TAGS_SAVE_AS = ''
 CATEGORIES_SAVE_AS = ''
 AUTHORS_SAVE_AS = ''
 ARCHIVES_SAVE_AS = ''
+
+[if-any uses_genid]
+# Configure the asfgenid plugin
+ASF_GENID = {
+    'unsafe_tags': [genid.unsafe],
+    'metadata': [genid.metadata],
+    'elements': [genid.elements],
+    'permalinks': [genid.permalinks],
+    'tables': [genid.tables],
+[if-any genid.headings_depth]
+    'headings': True,
+    'headings_re': r'^h[[]1-[genid.headings_depth]]',
+[else]
+    'headings': False,
+[end]
+[if-any genid.toc_depth]
+    'toc': True,
+    'toc_headers': r'h[[]1-[genid.toc_depth]]',
+[else]
+    'toc': False,
+[end]
+    'debug': False,
+}
+[end]
