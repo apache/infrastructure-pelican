@@ -38,13 +38,13 @@ ASF_GENID = {
     'tables': [genid.tables],
 [if-any genid.headings_depth]
     'headings': True,
-    'headings_re': r'^h[[]1-[genid.headings_depth]]',
+    'headings_re': '^h[[]1-[genid.headings_depth]]',
 [else]
     'headings': False,
 [end]
 [if-any genid.toc_depth]
     'toc': True,
-    'toc_headers': r'h[[]1-[genid.toc_depth]]',
+    'toc_headers': '^h[[]1-[genid.toc_depth]]',
 [else]
     'toc': False,
 [end]
