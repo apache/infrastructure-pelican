@@ -194,7 +194,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
     if 'genid' in ydata:
         class GenIdParams:
             def setbool(self, name):
-                setattr(self, name, str(ydata['genid'][name]))
+                setattr(self, name, str(ydata['genid'].get(name, False)))
             def setdepth(self, name):
                 setattr(self, name, ydata['genid'].get(name))
 
@@ -204,6 +204,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         genid.setbool('elements')
         genid.setbool('permalinks')
         genid.setbool('tables')
+        genid.setbool('debug')
         genid.setdepth('headings_depth')
         genid.setdepth('toc_depth')
 
