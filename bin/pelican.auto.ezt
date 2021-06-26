@@ -49,6 +49,5 @@ ASF_GENID = {
 [else]
     'toc': False,
 [end]
-    'debug': False,
 }
 [end]
