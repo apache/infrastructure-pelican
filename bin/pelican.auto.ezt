@@ -10,15 +10,22 @@ SITEREPOSITORY = '[repository]'
 CURRENTYEAR = [year]
 TRADEMARKS = '[trademarks]'
 
-# Specify location of plugins, and which to use
-PLUGIN_PATHS = [[] [for p_paths]'[p_paths]', [end]]
-PLUGINS = [[] [for use]'[use]', [end]]
+THEME = '[theme]'
 
-# Copy without processing
-STATIC_PATHS = [[] [for static]'[static]', [end]]
+# Specify location of plugins, and which to use
+PLUGIN_PATHS = [ [for p_paths]'[p_paths]', [end] ]
+PLUGINS = [ [for use]'[use]', [end] ]
+
+# All content is located at '.' (aka content/ )
+PAGE_PATHS = [ '.' ]
+STATIC_PATHS = [ '.' ]
 
 # Where to place/link generated pages
-PAGE_SAVE_AS = '{slug}.html'
+PATH_METADATA = '(?P<path_no_ext>.*)\..*'
+### some sites have the pages in a subdir. TBD.
+#PATH_METADATA = 'pages/(?P<path_no_ext>.*)\..*'
+
+PAGE_SAVE_AS = '{path_no_ext}.html'
 
 # Disable unused Pelican features
 FEED_ALL_ATOM = None
@@ -27,6 +34,12 @@ TAGS_SAVE_AS = ''
 CATEGORIES_SAVE_AS = ''
 AUTHORS_SAVE_AS = ''
 ARCHIVES_SAVE_AS = ''
+
+# Disable articles by pointing to a (should-be-absent) subdir
+ARTICLE_PATHS = [ 'articles' ]
+
+# Disable all processing of .html files
+READERS = { 'html': None, }
 
 [if-any uses_genid]
 # Configure the asfgenid plugin
