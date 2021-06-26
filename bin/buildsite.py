@@ -104,17 +104,10 @@ except:
     # Call pelican
     buildpath = os.path.join(path, 'build/output')
     os.makedirs(buildpath, exist_ok = True)
-    tdir = os.path.join(path, 'source', args.theme)
-    if os.path.isdir(tdir):
-        print("Using theme directory %s..." % tdir)
-        tdir = '-t %s' % tdir
-    else:
-        print("No theme dir specified or default not present, trying with no theme specified...")
-        tdir = ''
     buildcmd = ('/bin/bash', '-c',
                 'source bin/activate; cd source && '
                 ### note: adding --debug can be handy
-                f'(pelican content --settings {settings_path} {tdir} -o {buildpath})',
+                f'(pelican content --settings {settings_path} -o {buildpath})',
                 )
     print("Building web site with:", buildcmd)
     env = os.environ.copy()
@@ -188,7 +181,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         'year': datetime.date.today().year,
         'p_paths': builtin_p_paths + [ os.path.join(sourcepath, p) for p in ydata['plugins']['paths'] ],
         'use': ydata['plugins']['use'],
-        'static': ydata['static'],
+        'theme': os.path.join(sourcepath, ydata.get('theme', 'theme/apache')),
         })
 
     if 'genid' in ydata:
@@ -230,9 +223,9 @@ def main():
     parser.add_argument("--project", required = True, help = "ASF Project")
     parser.add_argument("--sourcebranch", help = "Web site repository branch to build from", default = 'master')
     parser.add_argument("--outputbranch", help = "Web site repository branch to commit output to", default = 'asf-site')
-    parser.add_argument("--theme", help = "Web site theme to use", default = 'theme')
     parser.add_argument("--count", help = "Minimum number of html pages", type = int, default = 0)
     args = parser.parse_args()
+    #print(args)
 
     # Fail fast, if somebody specifies svn.
     assert args.sourcetype == 'git'
