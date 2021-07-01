@@ -126,10 +126,6 @@ except:
     # Done for now
     print("Web site successfully generated!")
 
-    if not IS_PRODUCTION:
-        # We do NOT want to perform commits in a dev/test environment.
-        return
-
     # It is much easier to do all the below, if we chdir()
     os.chdir(sourcepath)
 
@@ -164,14 +160,23 @@ except:
         shutil.rmtree(outputdir)
     shutil.move(buildpath, outputdir)
     subprocess.run((GIT, 'add', 'output/'), check=True)
-    
 
-    print("- Committing and pushing to %s" % args.source)
-    subprocess.run((GIT, 'commit', '-m', 'Automatic Site Publish by Buildbot'), check=True)
-    subprocess.run((GIT, 'push', args.source, args.outputbranch), check=True)
+    # Check if there are any changes.
+    cp = subprocess.run((GIT, 'diff', '--cached', '--exit-code'))
+    if cp.returncode == 0:
+        # There were no differences reported.
+        print('Nothing new to commit. Ignoring this build.')
+    else:
+        print("- Committing to %s" % args.source)
+        subprocess.run((GIT, 'commit', '-m', 'Automatic Site Publish by Buildbot'), check=True)
 
-    print("Web site generated and published successfully!")
-    
+        # If we're not in production, then avoid pushing changes.
+        if IS_PRODUCTION:
+            print('- Pushing changes, for publishing')
+            subprocess.run((GIT, 'push', args.source, args.outputbranch), check=True)
+
+        print('Success. Done.')
+
 
 def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath='.'):
     ydata = yaml.safe_load(open(source_yaml))
