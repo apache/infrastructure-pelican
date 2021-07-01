@@ -164,7 +164,7 @@ except:
     subprocess.run((GIT, 'add', 'output/'), check=True)
 
     # Check if there are any changes.
-    cp = subprocess.run((GIT, 'diff', '--cached', '--exit-code'))
+    cp = subprocess.run((GIT, 'diff', '--cached', '--quiet'))
     if cp.returncode == 0:
         # There were no differences reported.
         print('Nothing new to commit. Ignoring this build.')
