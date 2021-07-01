@@ -10,6 +10,9 @@ SITEREPOSITORY = '[repository]'
 CURRENTYEAR = [year]
 TRADEMARKS = '[trademarks]'
 
+TIMEZONE = 'UTC'
+
+# Theme includes templates and possibly static files
 THEME = '[theme]'
 
 # Specify location of plugins, and which to use
@@ -26,6 +29,9 @@ PATH_METADATA = '(?P<path_no_ext>.*)\..*'
 #PATH_METADATA = 'pages/(?P<path_no_ext>.*)\..*'
 
 PAGE_SAVE_AS = '{path_no_ext}.html'
+
+# Don't try to translate
+PAGE_TRANSLATION_ID = None
 
 # Disable unused Pelican features
 FEED_ALL_ATOM = None
