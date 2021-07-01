@@ -27,6 +27,7 @@ GIT             = '/usr/bin/git'
 SVN             = '/usr/bin/svn'
 PELICANFILES    = '/home/buildslave/slave/tools'
 SCRATCH_DIR     = '/tmp'
+PLUGINS         = '/opt/infrastructure-pelican/plugins'
 
 VERSION         = '0.28.3.gfm.12'
 LIBCMARKDIR     = f'/usr/local/asfpackages/cmark-gfm/cmark-gfm-{VERSION}/lib'
@@ -83,10 +84,11 @@ def start_build(args):
     pelconf_yaml = os.path.join(sourcepath, AUTO_SETTINGS_YAML)
     if os.path.exists(pelconf_yaml):
         settings_path = os.path.join(path, AUTO_SETTINGS)
-        builtin_p_paths = [
-            os.path.join(tool_dir, os.pardir, 'plugins'),
-            ]
-        generate_settings(pelconf_yaml, settings_path, builtin_p_paths, sourcepath)
+        if IS_PRODUCTION:
+            builtin_plugins = PLUGINS
+        else:
+            builtin_plugins = os.path.join(tool_dir, os.pardir, 'plugins')
+        generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], sourcepath)
     else:
         # The default name, but we'll pass it explicitly.
         settings_path = os.path.join(sourcepath, 'pelicanconf.py')
