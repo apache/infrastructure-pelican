@@ -72,7 +72,7 @@ def start_build(args):
                         'source bin/activate; pip3 install -r source/requirements.txt'),
                        cwd=path, check=True)
     else:
-        print("No requirements.txt found, skipping pip")
+        print("On dev/test requirements.txt is not processed, skipping pip")
 
     # Where are our tools?
     if IS_PRODUCTION:
@@ -117,10 +117,7 @@ except:
     subprocess.run(buildcmd, cwd=path, check=True, env=env)
 
     count = len(glob.glob(f'{buildpath}/**/*.html', recursive=True))
-    message = ''
-    if not IS_PRODUCTION:
-        message = f' To test output: cd {path}/build; pelican -l'
-    print(f"{count} html files.{message}")
+    print(f"{count} html files.")
     if args.count > 0 and args.count > count:
         print("Not enough html pages in the Web Site. Minimum %s > %s found in the Web Site." % (args.count, count))
         sys.exit(4)
@@ -178,6 +175,15 @@ except:
             subprocess.run((GIT, 'push', args.source, args.outputbranch), check=True)
 
         print('Success. Done.')
+    # for dev/test provide viewing instructions
+    if not IS_PRODUCTION:
+        if args.listen:
+            try:
+                subprocess.run(('pelican','-l'), check=True)
+            except KeyboardInterrupt:
+                pass
+        else:
+            print(f'To test output:\ncd {sourcepath}; pelican -l')
 
 
 def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath='.'):
@@ -231,6 +237,7 @@ def main():
     parser.add_argument("--sourcebranch", help = "Web site repository branch to build from", default = 'master')
     parser.add_argument("--outputbranch", help = "Web site repository branch to commit output to", default = 'asf-site')
     parser.add_argument("--count", help = "Minimum number of html pages", type = int, default = 0)
+    parser.add_argument("--listen", help = "Start pelican -l after build", action = "store_true")
     args = parser.parse_args()
     #print(args)
 
