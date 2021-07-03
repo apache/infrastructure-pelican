@@ -232,7 +232,6 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         
         if 'data' in sdata:
             tdata['uses_data'] = 'yes'  # ezt.boolean()
-            tdata['asfdebug'] = sdata.get('debug', False)
             tdata['asfdata'] = sdata['data']
             tdata['use'].append('asfdata')
         # run the included scripts with the asfrun plugin
