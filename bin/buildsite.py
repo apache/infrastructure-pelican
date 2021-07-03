@@ -222,6 +222,40 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
     else:
         tdata['uses_genid'] = None
 
+    tdata['uses_data'] = None
+    tdata['uses_run'] = None
+    tdata['uses_ignore'] = None
+    tdata['uses_copy'] = None
+    if 'setup' in ydata:
+        sdata = ydata['setup']
+        
+        if 'data' in sdata:
+            tdata['uses_data'] = 'yes'  # ezt.boolean()
+            tdata['asfdebug'] = sdata.get('debug', False)
+            tdata['asfdata'] = sdata['data']
+            tdata['use'].append('asfdata')
+        # run the included scripts with the asfrun plugin
+        if 'run' in sdata:
+            tdata['uses_run'] = 'yes'  # ezt.boolean
+            tdata['run'] = [ s for s in sdata['run']]
+            # Add the plugin.
+            tdata['use'].append('asfrun')
+        # ignore files avoids copying these files to output
+        if 'ignore' in sdata:
+            tdata['ignore'] = [ i for i in sdata['ignore']]
+            tdata['uses_ignore'] = 'yes'  # ezt.boolean
+        # copy directories to output
+        if 'copy' in sdata:
+            tdata['copy'] = [ i for i in sdata['copy']]
+            tdata['uses_copy'] = 'yes'  # ezt.boolean
+            # Add the plugin.
+            tdata['use'].append('asfcopy')
+
+    # if ezmd files are present then use the asfreader plugin
+    ezmd_count = len(glob.glob(f'{sourcepath}/**/*.ezmd', recursive=True))
+    if ezmd_count > 0:
+        tdata['use'].append('asfreader')
+
     t = ezt.Template(os.path.join(THIS_DIR, AUTO_SETTINGS_TEMPLATE))
     t.generate(open(settings_path, 'w'), tdata)
 
