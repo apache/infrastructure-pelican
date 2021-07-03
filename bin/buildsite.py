@@ -197,6 +197,8 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         'theme': os.path.join(sourcepath, ydata.get('theme', 'theme/apache')),
         })
 
+    tdata['debug'] = str(ydata.get('debug', False))
+        
     if 'genid' in ydata:
         class GenIdParams:
             def setbool(self, name):
@@ -210,7 +212,6 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         genid.setbool('elements')
         genid.setbool('permalinks')
         genid.setbool('tables')
-        genid.setbool('debug')
         genid.setdepth('headings_depth')
         genid.setdepth('toc_depth')
 

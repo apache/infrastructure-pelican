@@ -54,7 +54,6 @@ ASF_GENID = {
     'elements': [genid.elements],
     'permalinks': [genid.permalinks],
     'tables': [genid.tables],
-    'debug': [genid.debug],
 [if-any genid.headings_depth]
     'headings': True,
     'headings_re': '^h[[]1-[genid.headings_depth]]',
@@ -67,6 +66,7 @@ ASF_GENID = {
 [else]
     'toc': False,
 [end]
+    'debug': [debug]
 }
 [end]
 [if-any uses_data]
@@ -76,7 +76,7 @@ ASF_DATA = {
     'metadata': {
         'site_url': SITEURL
     },
-    'debug': [asfdebug]
+    'debug': [debug]
 }
 [end]
 [if-any uses_run]
