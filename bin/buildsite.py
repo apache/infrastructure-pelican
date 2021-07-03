@@ -237,16 +237,16 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         # run the included scripts with the asfrun plugin
         if 'run' in sdata:
             tdata['uses_run'] = 'yes'  # ezt.boolean
-            tdata['run'] = [ s for s in sdata['run']]
+            tdata['run'] = sdata['run']
             # Add the plugin.
             tdata['use'].append('asfrun')
         # ignore files avoids copying these files to output
         if 'ignore' in sdata:
-            tdata['ignore'] = [ i for i in sdata['ignore']]
+            tdata['ignore'] = sdata['ignore']
             tdata['uses_ignore'] = 'yes'  # ezt.boolean
         # copy directories to output
         if 'copy' in sdata:
-            tdata['copy'] = [ i for i in sdata['copy']]
+            tdata['copy'] = sdata['copy']
             tdata['uses_copy'] = 'yes'  # ezt.boolean
             # Add the plugin.
             tdata['use'].append('asfcopy')
