@@ -195,10 +195,9 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         'p_paths': builtin_p_paths + [ os.path.join(sourcepath, p) for p in ydata['plugins']['paths'] ],
         'use': ydata['plugins']['use'],
         'theme': os.path.join(sourcepath, ydata.get('theme', 'theme/apache')),
+        'debug': str(ydata.get('debug', False)),
         })
 
-    tdata['debug'] = str(ydata.get('debug', False))
-        
     if 'genid' in ydata:
         class GenIdParams:
             def setbool(self, name):
@@ -218,8 +217,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         tdata['uses_genid'] = 'yes'  # ezt.boolean()
         tdata['genid'] = genid
 
-        # Add the plugin.
-        tdata['use'].append('asfgenid')
+        tdata['use'].append('asfgenid')  # add the plugin
     else:
         tdata['uses_genid'] = None
 
@@ -230,31 +228,31 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
     if 'setup' in ydata:
         sdata = ydata['setup']
         
+        # Load data structures into the pelican METADATA.
         if 'data' in sdata:
             tdata['uses_data'] = 'yes'  # ezt.boolean()
             tdata['asfdata'] = sdata['data']
-            tdata['use'].append('asfdata')
-        # run the included scripts with the asfrun plugin
+            tdata['use'].append('asfdata')  # add the plugin
+        # Run the included scripts with the asfrun plugin.
         if 'run' in sdata:
             tdata['uses_run'] = 'yes'  # ezt.boolean
             tdata['run'] = sdata['run']
-            # Add the plugin.
-            tdata['use'].append('asfrun')
-        # ignore files avoids copying these files to output
+            tdata['use'].append('asfrun')  # add the plugin
+        # Ignore files avoids copying these files to output.
         if 'ignore' in sdata:
-            tdata['ignore'] = sdata['ignore']
             tdata['uses_ignore'] = 'yes'  # ezt.boolean
-        # copy directories to output
+            tdata['ignore'] = sdata['ignore']
+            # No plugin needed.
+        # Copy directories to output.
         if 'copy' in sdata:
-            tdata['copy'] = sdata['copy']
             tdata['uses_copy'] = 'yes'  # ezt.boolean
-            # Add the plugin.
-            tdata['use'].append('asfcopy')
+            tdata['copy'] = sdata['copy']
+            tdata['use'].append('asfcopy')  # add the plugin
 
     # if ezmd files are present then use the asfreader plugin
     ezmd_count = len(glob.glob(f'{sourcepath}/**/*.ezmd', recursive=True))
     if ezmd_count > 0:
-        tdata['use'].append('asfreader')
+        tdata['use'].append('asfreader')  # add the plugin
 
     t = ezt.Template(os.path.join(THIS_DIR, AUTO_SETTINGS_TEMPLATE))
     t.generate(open(settings_path, 'w'), tdata)
