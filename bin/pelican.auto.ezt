@@ -46,6 +46,7 @@ ARTICLE_PATHS = [ 'articles' ]
 
 # Disable all processing of .html files
 READERS = { 'html': None, }
+
 [if-any uses_genid]
 # Configure the asfgenid plugin
 ASF_GENID = {
@@ -66,7 +67,7 @@ ASF_GENID = {
 [else]
     'toc': False,
 [end]
-    'debug': [debug]
+    'debug': [debug],
 }
 [end]
 [if-any uses_data]
@@ -76,17 +77,17 @@ ASF_DATA = {
     'metadata': {
         'site_url': SITEURL
     },
-    'debug': [debug]
+    'debug': [debug],
 }
 [end]
 [if-any uses_run]
-# Configure the asfshell plugin
-ASF_RUN = [ [for run]'[run]',[end] ]
+# Configure the asfrun plugin
+ASF_RUN = [ [for run]'[run]', [end] ]
 [end]
 [if-any uses_ignore]
 # Configure ignore files
-IGNORE_FILES = [ [for ignore]'[ignore]',[end] ]
+IGNORE_FILES = [ [for ignore]'[ignore]', [end] ]
 [end]
 [if-any uses_copy]
-ASF_COPY = [ [for copy]'[copy]',[end] ]
+ASF_COPY = [ [for copy]'[copy]', [end] ]
 [end]
