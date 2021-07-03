@@ -55,7 +55,6 @@ ASF_GENID = {
     'elements': [genid.elements],
     'permalinks': [genid.permalinks],
     'tables': [genid.tables],
-    'debug': [genid.debug],
 [if-any genid.headings_depth]
     'headings': True,
     'headings_re': '^h[[]1-[genid.headings_depth]]',
@@ -68,5 +67,27 @@ ASF_GENID = {
 [else]
     'toc': False,
 [end]
+    'debug': [debug],
 }
+[end]
+[if-any uses_data]
+# Configure the asfdata plugin
+ASF_DATA = {
+    'data': '[asfdata]',
+    'metadata': {
+        'site_url': SITEURL
+    },
+    'debug': [debug],
+}
+[end]
+[if-any uses_run]
+# Configure the asfrun plugin
+ASF_RUN = [ [for run]'[run]', [end] ]
+[end]
+[if-any uses_ignore]
+# Configure ignore files
+IGNORE_FILES = [ [for ignore]'[ignore]', [end] ]
+[end]
+[if-any uses_copy]
+ASF_COPY = [ [for copy]'[copy]', [end] ]
 [end]
