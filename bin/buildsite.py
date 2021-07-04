@@ -57,7 +57,7 @@ def start_build(args):
     # Pull in repository data
     sourcepath = os.path.join(path, 'source')
     print("Cloning from git repository %s (branch: %s)" % (args.source, args.sourcebranch))
-    subprocess.run((GIT, 'clone', '--branch', args.sourcebranch, args.source, sourcepath),
+    subprocess.run((GIT, 'clone', '--branch', args.sourcebranch, '--filter=tree:0', args.source, sourcepath),
                    check=True)
 
     # Activate venv and install pips if needed. For dev/test, we will
