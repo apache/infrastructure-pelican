@@ -141,7 +141,7 @@ def slugify(value, separator):
 def unique(tag_id, ids):
     while tag_id in ids or not tag_id:
         m = IDCOUNT_RE.match(tag_id)
-        print(f'id="{tag_id}" is a duplicate')
+        print(f'WARNING: id="{tag_id}" is a duplicate')
         if m:
             tag_id = '%s_%d' % (m.group(1), int(m.group(2)) + 1)
         else:
@@ -174,7 +174,7 @@ def fixup_content(content):
 
 
 # expand metadata found in {{ key }}
-def expand_metadata(tag, metadata):
+def expand_metadata(tag, metadata, debug):
     this_string = str(tag.string)
     m = 1
     modified = False
@@ -185,7 +185,8 @@ def expand_metadata(tag, metadata):
             format_string = '{{{0}}}'.format(this_data)
             try:
                 new_string = format_string.format(**metadata)
-                print(f'{{{{{m.group(1)}}}}} -> {new_string}')
+                if debug:
+                    print(f'{{{{{m.group(1)}}}}} -> {new_string}')
             except Exception:
                 # the data expression was not found
                 print(f'{{{{{m.group(1)}}}}} is not found')
@@ -243,7 +244,7 @@ def headingid_transform(ids, soup, tag, permalinks, perma_set):
 
 
 # generate table of contents from headings after [TOC] content
-def generate_toc(content, tags, title, toc_headers):
+def generate_toc(content, tags, title, toc_headers, debug):
     settoc = False
     tree = node = HtmlTreeNode(None, title, 'h0', '')
     # find the last [TOC]
@@ -260,7 +261,8 @@ def generate_toc(content, tags, title, toc_headers):
     # convert the ToC to Beautiful Soup
     tree_soup = ''
     if settoc:
-        print('  ToC')
+        if debug:
+            print('  ToC')
         # convert the HtmlTreeNode into Beautiful Soup
         tree_string = '{}'.format(tree)
         tree_soup = BeautifulSoup(tree_string, 'html.parser')
@@ -347,7 +349,7 @@ def generate_id(content):
         if asf_genid['debug']:
             print(f'metadata expansion: {content.relative_source_path}')
         for tag in soup.findAll(string=METADATA_RE):
-            expand_metadata(tag, content.metadata)
+            expand_metadata(tag, content.metadata, asf_genid['debug'])
 
     # step 4 - find all id attributes already present
     for tag in soup.findAll(id=True):
@@ -381,14 +383,15 @@ def generate_id(content):
     if asf_genid['toc']:
         tags = soup('p', text='[TOC]')
         if tags:
-            generate_toc(content, tags, title, asf_genid['toc_headers'])
+            generate_toc(content, tags, title, asf_genid['toc_headers'], asf_genid['debug'])
 
     # step 9 - reset the html content
     content._content = soup.decode(formatter='html')
 
     # step 10 - output all of the permalinks created
-    for tag in permalinks:
-        print(f'    #{tag}')
+    if asf_genid['debug']:
+        for tag in permalinks:
+            print(f'    #{tag}')
 
 
 def tb_connect(pel_ob):
