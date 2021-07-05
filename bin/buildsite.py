@@ -192,7 +192,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
     tdata = ydata['site']  # Easy to copy these simple values.
     tdata.update({
         'year': datetime.date.today().year,
-        'p_paths': builtin_p_paths + [ os.path.join(sourcepath, p) for p in ydata['plugins']['paths'] ],
+        'p_paths': [ os.path.join(sourcepath, p) for p in ydata['plugins']['paths'] ] + builtin_p_paths, # local plugins override builtins
         'use': ydata['plugins']['use'],
         'theme': os.path.join(sourcepath, ydata.get('theme', 'theme/apache')),
         'debug': str(ydata.get('debug', False)),
