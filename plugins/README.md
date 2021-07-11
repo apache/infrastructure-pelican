@@ -1,12 +1,29 @@
 # Standard plugins for ASF websites
 
+## asfcopy
+
+Copies a directory trees to output outside of the Pelican processing of content and static files.
+
+## asfdata
+
+During initiation of Pelican reads in data models to global metadata.
+
 ## asfgenid
 
-Generates HeadingIDs, ElementID, and PermaLinks
+Generates HeadingIDs, ElementID, and PermaLinks. This also generates ToC in a different style from **toc**.
 
 ## asfreader
 
 Pelican plugin that processes ezt template Markdown through ezt and then GitHub Flavored Markdown.
+Used to create views of data models initiated by **asfdata**.
+
+## asfrun
+
+During initiation runs scripts that can be used to create content and static files.
+
+## gfm
+
+Pelican plugin that processes Github Flavored Markdown(**GFM**) using the cmark library.
 
 ## toc
 
