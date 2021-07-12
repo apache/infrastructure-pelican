@@ -1,5 +1,7 @@
 # Standard plugins for ASF websites
 
+All of these plugins are ALv2 except for **asfgenid** and **toc** which may be AGPL or permissive. This needs investigation.
+
 ## asfcopy
 
 Copies a directory trees to output outside of the Pelican processing of content and static files.
