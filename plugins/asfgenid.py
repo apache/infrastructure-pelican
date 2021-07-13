@@ -39,13 +39,16 @@ ASF_GENID = {
 }
 
 # Fixup tuples for HTML that GFM makes into text.
+# Fixup [ and ] that download templates use for ezt.
 FIXUP_UNSAFE = [
     (re.compile(r'&lt;script'), '<script'),
     (re.compile(r'&lt;/script'), '</script'),
     (re.compile(r'&lt;style'), '<style'),
     (re.compile(r'&lt;/style'), '</style'),
     (re.compile(r'&lt;iframe'), '<iframe'),
-    (re.compile(r'&lt;/iframe'), '</iframe')
+    (re.compile(r'&lt;/iframe'), '</iframe'),
+    (re.compile(r'%5B'), '['),
+    (re.compile(r'%5D'), ']'),
 ]
 
 # Find {{ metadata }} inclusions
