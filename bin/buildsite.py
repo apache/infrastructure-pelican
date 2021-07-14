@@ -199,9 +199,10 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
     tdata['use'] = ['gfm']
     if 'plugins' in ydata:
         if 'paths' in ydata['plugins']:
-            tdata['p_paths'].append([ os.path.join(sourcepath, p) for p in ydata['plugins']['paths'] ])
+            for p in ydata['plugins']['paths']:
+                tdata['p_paths'].append(os.path.join(sourcepath, p))
         if 'use' in ydata['plugins']:
-            tdata['use'] = ydata['plugins']['use'],
+            tdata['use'] = ydata['plugins']['use']
 
     if 'genid' in ydata:
         class GenIdParams:
