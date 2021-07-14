@@ -192,11 +192,16 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
     tdata = ydata['site']  # Easy to copy these simple values.
     tdata.update({
         'year': datetime.date.today().year,
-        'p_paths': builtin_p_paths + [ os.path.join(sourcepath, p) for p in ydata['plugins']['paths'] ],
-        'use': ydata['plugins']['use'],
         'theme': os.path.join(sourcepath, ydata.get('theme', 'theme/apache')),
         'debug': str(ydata.get('debug', False)),
         })
+    tdata['p_paths'] = builtin_p_paths
+    tdata['use'] = ['gfm']
+    if 'plugins' in ydata:
+        if 'paths' in ydata['plugins']:
+            tdata['p_paths'].append([ os.path.join(sourcepath, p) for p in ydata['plugins']['paths'] ])
+        if 'use' in ydata['plugins']:
+            tdata['use'] = ydata['plugins']['use'],
 
     if 'genid' in ydata:
         class GenIdParams:
