@@ -36,7 +36,7 @@ RUN apt update && apt upgrade -y
 RUN apt install git curl cmake build-essential -y
 
 # Define this *after* initial setup to allow that to be cached
-ARG INFRA_PELICAN_COMMIT=cfd07abaa42e6647fa24656376340135f8477fcb
+ARG INFRA_PELICAN_COMMIT=cb216488a99c22b2c205b19ad72d0bc8be2445da
 
 WORKDIR /tmp/pelican-asf
 RUN git clone https://github.com/apache/infrastructure-pelican.git .
