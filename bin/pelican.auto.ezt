@@ -24,9 +24,9 @@ PAGE_PATHS = [ '.' ]
 STATIC_PATHS = [ '.' ]
 
 # Where to place/link generated pages
-PATH_METADATA = '(?P<path_no_ext>.*)\..*'
+PATH_METADATA = '(?P<path_no_ext>.*)\\..*'
 ### some sites have the pages in a subdir. TBD.
-#PATH_METADATA = 'pages/(?P<path_no_ext>.*)\..*'
+#PATH_METADATA = 'pages/(?P<path_no_ext>.*)\\..*'
 
 PAGE_SAVE_AS = '{path_no_ext}.html'
 
