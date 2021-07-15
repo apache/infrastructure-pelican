@@ -36,7 +36,7 @@ RUN apt update && apt upgrade -y
 RUN apt install git curl cmake build-essential -y
 
 # Define this *after* initial setup to allow that to be cached
-ARG INFRA_PELICAN_COMMIT=cb216488a99c22b2c205b19ad72d0bc8be2445da
+ARG INFRA_PELICAN_COMMIT=8da38f720512f6b3e8d55ecc0a8d8a87501fcd47
 
 WORKDIR /tmp/pelican-asf
 RUN git clone https://github.com/apache/infrastructure-pelican.git .
@@ -62,4 +62,4 @@ COPY --from=pelican-asf /tmp/pelican-asf .
 # Run Pelican
 WORKDIR /site
 RUN mkdir -p /site-generated
-ENTRYPOINT [ "/bin/bash", "-c", "source /tmp/pelican-asf/LIBCMARKDIR.sh && /tmp/pelican-asf/bin/build_in_docker.py" ]
+ENTRYPOINT [ "/bin/bash", "-c", "source /tmp/pelican-asf/LIBCMARKDIR.sh && /tmp/pelican-asf/bin/buildsite.py dir --serve" ]

@@ -43,6 +43,7 @@ IS_PRODUCTION   = os.path.exists(PELICANFILES)
 AUTO_SETTINGS_YAML = 'pelicanconf.yaml'
 AUTO_SETTINGS_TEMPLATE = 'pelican.auto.ezt'
 AUTO_SETTINGS = 'pelican.auto.py'
+AUTO_SETTINGS_HELP = 'pelicanconf.md'
 
 
 def start_build(args):
@@ -203,6 +204,9 @@ def build_dir(args):
         # The default name, but we'll pass it explicitly.
         settings_path = os.path.join(sourcepath, 'pelicanconf.py')
         print(f'You must convert {settings_path} to {pelconf_yaml}')
+        help_path = os.path.join(tool_dir, os.pardir, AUTO_SETTINGS_HELP)
+        with open(help_path, encoding='utf-8') as f:
+            print(f.read())
         sys.exit(4)
 
     if args.serve:
@@ -212,9 +216,8 @@ def build_dir(args):
 
     # Call pelican
     buildcmd = ('/bin/bash', '-c',
-                'source bin/activate; '
                 ### note: adding --debug can be handy
-                f'(pelican content --settings {settings_path} --o site-generated -b 0.0.0.0 {pel_options})',
+                f'(pelican content --settings {settings_path} --o {args.output} -b 0.0.0.0 {pel_options})',
                 )
     print("Building web site with:", buildcmd)
     env = os.environ.copy()
