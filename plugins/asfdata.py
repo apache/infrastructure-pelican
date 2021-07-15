@@ -420,10 +420,10 @@ def process_distributions(project, src, sort_revision, debug):
             # use the path as a key for each release
             release = line
             if filename:
-                if re.search('KEYS(\.txt)?$', filename):
+                if re.search('KEYS(\\.txt)?$', filename):
                     # save the KEYS file url
                     keys = f'https://downloads.apache.org/{project}/{line}'
-                elif re.search('\.(asc|sig)$', filename, flags=re.IGNORECASE):
+                elif re.search('\\.(asc|sig)$', filename, flags=re.IGNORECASE):
                     # we key a release off of a signature. remove the extension
                     release = '.'.join(parts[:-1])
                     signatures[release] = filename
@@ -434,7 +434,7 @@ def process_distributions(project, src, sort_revision, debug):
                     if re.search(src, filename):
                         # put source distributions in the front (it is a reverse sort)
                         revisions[release] = revision + 100000
-                elif re.search('\.(sha512|sha1|sha256|sha|md5|mds)$', filename, flags=re.IGNORECASE):
+                elif re.search('\\.(sha512|sha1|sha256|sha|md5|mds)$', filename, flags=re.IGNORECASE):
                     # some projects checksum their signatures
                     part0 = ".".join(line.split('.')[-2:-1])
                     if part0 == "asc":
