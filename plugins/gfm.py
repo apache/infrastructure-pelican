@@ -24,7 +24,6 @@
 import sys
 import os.path
 import ctypes
-import time
 import re
 import platform
 
@@ -207,26 +206,26 @@ class GFMReader(pelican.readers.BaseReader):
         return content, metadata
 
     def render(self, text):
-      "Use cmark-gfm to render the Markdown into an HTML fragment."
+        "Use cmark-gfm to render the Markdown into an HTML fragment."
 
-      parser = F_cmark_parser_new(OPTS)
-      assert parser
-      for name in EXTENSIONS:
-        ext = F_cmark_find_syntax_extension(name.encode('utf-8'))
-        assert ext
-        rv = F_cmark_parser_attach_syntax_extension(parser, ext)
-        assert rv
-      exts = F_cmark_parser_get_syntax_extensions(parser)
-      F_cmark_parser_feed(parser, text, len(text))
-      doc = F_cmark_parser_finish(parser)
-      assert doc
+        parser = F_cmark_parser_new(OPTS)
+        assert parser
+        for name in EXTENSIONS:
+            ext = F_cmark_find_syntax_extension(name.encode('utf-8'))
+            assert ext
+            rv = F_cmark_parser_attach_syntax_extension(parser, ext)
+            assert rv
+        exts = F_cmark_parser_get_syntax_extensions(parser)
+        F_cmark_parser_feed(parser, text, len(text))
+        doc = F_cmark_parser_finish(parser)
+        assert doc
 
-      output = F_cmark_render_html(doc, OPTS, exts)
+        output = F_cmark_render_html(doc, OPTS, exts)
 
-      F_cmark_parser_free(parser)
-      F_cmark_node_free(doc)
+        F_cmark_parser_free(parser)
+        F_cmark_node_free(doc)
 
-      return output
+        return output
 
 
 def add_readers(readers):
