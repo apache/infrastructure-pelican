@@ -344,7 +344,7 @@ def main():
     # The --sourcetype option is present to support legacy command lines
     parser.add_argument("--sourcetype", action = "store_true", help = argparse.SUPPRESS)
 
-    subparsers = parser.add_subparsers(help = "sub-command help", required = True, dest="command")
+    subparsers = parser.add_subparsers(help="Available subcommands.")
 
     parser_git = subparsers.add_parser("git", help="Retrieve source from git repository, build, and commit the result")
     parser_git.add_argument("--source", required = True, help = "Source repository URL (required)")
