@@ -209,7 +209,7 @@ def build_dir(args):
             print(f.read())
         sys.exit(4)
 
-    if args.serve:
+    if args.listen:
         pel_options = '-r -l'
     else:
         pel_options = ''
@@ -353,21 +353,15 @@ def main():
     parser_git.add_argument("--outputbranch", help = "Web site repository branch to commit output to (default: %(default)s)", default = "asf-site")
     parser_git.add_argument("--count", help = "Minimum number of html pages (default: %(default)s)", type = int, default = 0)
     parser_git.add_argument("--listen", help = "Start pelican -l after build (default: %(default)s)", action = "store_true")
+    parser_git.set_defaults(func=locked_build)
 
     parser_dir = subparsers.add_parser("dir", help = "Build source in current directory and optionally serve the result")
     parser_dir.add_argument("--output", help = "Pelican output path (default: %(default)s)", default = "site-generated")
-    parser_dir.add_argument("--serve", help = "Pelican build in server mode (default: %(default)s)", action = "store_true")
+    parser_dir.add_argument("--listen", help = "Pelican build in server mode (default: %(default)s)", action = "store_true")
+    parser_dir.set_defaults(func=build_dir)
+
     args = parser.parse_args()
-    print(args)
-
-    # simple build from source in the current directory
-    if args.command == 'dir':
-        build_dir(args)
-        return
-
-    # Fail fast, if somebody specifies svn.
-    assert args.command == 'git'
-    locked_build(args)
+    args.func(args)
 
 
 if __name__ == '__main__':
