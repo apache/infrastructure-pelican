@@ -186,6 +186,45 @@ except:
             print(f'To test output:\ncd {sourcepath}; pelican -l')
 
 
+def build_dir(args):
+
+    path = sourcepath = '.'
+
+    # Where are our tools?
+    tool_dir = THIS_DIR
+    print("TOOLS:", tool_dir)
+
+    pelconf_yaml = os.path.join(sourcepath, AUTO_SETTINGS_YAML)
+    if os.path.exists(pelconf_yaml):
+        settings_path = os.path.join(path, AUTO_SETTINGS)
+        builtin_plugins = os.path.join(tool_dir, os.pardir, 'plugins')
+        generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], sourcepath)
+    else:
+        # The default name, but we'll pass it explicitly.
+        settings_path = os.path.join(sourcepath, 'pelicanconf.py')
+        print(f'You must convert {settings_path} to {pelconf_yaml}')
+        sys.exit(4)
+
+    if args.serve:
+        pel_options = '-r -l'
+    else:
+        pel_options = ''
+
+    # Call pelican
+    buildcmd = ('/bin/bash', '-c',
+                'source bin/activate; '
+                ### note: adding --debug can be handy
+                f'(pelican content --settings {settings_path} --o site-generated -b 0.0.0.0 {pel_options})',
+                )
+    print("Building web site with:", buildcmd)
+    env = os.environ.copy()
+    env['LIBCMARKDIR'] = LIBCMARKDIR
+    try:
+        subprocess.run(buildcmd, cwd=path, check=True, env=env)
+    except KeyboardInterrupt:
+        pass
+
+
 def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath='.'):
     ydata = yaml.safe_load(open(source_yaml))
 
@@ -264,24 +303,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
     t.generate(open(settings_path, 'w'), tdata)
 
 
-def main():
-    #os.chdir('/tmp/nowhere')  ### DEBUG: make sure we aren't reliant on cwd
-
-    # Gather CLI args
-    parser = argparse.ArgumentParser(description = "This program pulls in pelican sources and generates static web sites, committing the result back to the repository.")
-    parser.add_argument("--sourcetype", help = "Source repository type (git/svn)", default = 'git')
-    parser.add_argument("--source", required = True, help = "Source repository URL")
-    parser.add_argument("--project", required = True, help = "ASF Project")
-    parser.add_argument("--sourcebranch", help = "Web site repository branch to build from", default = 'master')
-    parser.add_argument("--outputbranch", help = "Web site repository branch to commit output to", default = 'asf-site')
-    parser.add_argument("--count", help = "Minimum number of html pages", type = int, default = 0)
-    parser.add_argument("--listen", help = "Start pelican -l after build", action = "store_true")
-    args = parser.parse_args()
-    #print(args)
-
-    # Fail fast, if somebody specifies svn.
-    assert args.sourcetype == 'git'
-
+def locked_build(args):
     """ Grab an exclusive lock on this project via flock. Try for 2 minutes """
     ### NOTE: we do not delete/clean up this file, as that may interfere
     ###   with other processes. Just leave 'em around. Zero length files.
@@ -311,5 +333,39 @@ def main():
         sys.exit(-1)
 
     
+def main():
+    #os.chdir('/tmp/nowhere')  ### DEBUG: make sure we aren't reliant on cwd
+
+    # Gather CLI args
+    parser = argparse.ArgumentParser(description = "This program performs ASF Pelican builds generating static web sites from source content.")
+    # The --sourcetype option is present to support legacy command lines
+    parser.add_argument("--sourcetype", action = "store_true", help = argparse.SUPPRESS)
+
+    subparsers = parser.add_subparsers(help = "sub-command help", required = True, dest="command")
+
+    parser_git = subparsers.add_parser("git", help="Retrieve source from git repository, build, and commit the result")
+    parser_git.add_argument("--source", required = True, help = "Source repository URL (required)")
+    parser_git.add_argument("--project", required = True, help = "ASF Project (required)")
+    parser_git.add_argument("--sourcebranch", help = "Web site repository branch to build from (default: %(default)s)", default = "main")
+    parser_git.add_argument("--outputbranch", help = "Web site repository branch to commit output to (default: %(default)s)", default = "asf-site")
+    parser_git.add_argument("--count", help = "Minimum number of html pages (default: %(default)s)", type = int, default = 0)
+    parser_git.add_argument("--listen", help = "Start pelican -l after build (default: %(default)s)", action = "store_true")
+
+    parser_dir = subparsers.add_parser("dir", help = "Build source in current directory and optionally serve the result")
+    parser_dir.add_argument("--output", help = "Pelican output path (default: %(default)s)", default = "site-generated")
+    parser_dir.add_argument("--serve", help = "Pelican build in server mode (default: %(default)s)", action = "store_true")
+    args = parser.parse_args()
+    print(args)
+
+    # simple build from source in the current directory
+    if args.command == 'dir':
+        build_dir(args)
+        return
+
+    # Fail fast, if somebody specifies svn.
+    assert args.command == 'git'
+    locked_build(args)
+
+
 if __name__ == '__main__':
     main()
