@@ -10,7 +10,7 @@
 #
 #    docker run -it -p8000:8000 -v $PWD:/site pelican-asf
 #
-# from a folder that contains your pelicanconf.py file and ./content folder.
+# from a folder that contains your pelicanconf.yaml file and ./content folder.
 #
 # That should build the site, make it available at http://localhost:8000 and rebuild
 # if you make changes to the content.
