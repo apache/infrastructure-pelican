@@ -36,6 +36,7 @@ RUN apt update && apt upgrade -y
 RUN apt install git curl cmake build-essential -y
 
 # Define this *after* initial setup to allow that to be cached
+# TODO: document why this needs to be defined and how to choose the commit to be used
 ARG INFRA_PELICAN_COMMIT=83e4a5dd6e28a101cc61085d2da6dbaed66e4513
 
 WORKDIR /tmp/pelican-asf
