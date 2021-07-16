@@ -30,7 +30,25 @@
 # And then run this or anything suitable in that shell to experiment:
 #
 #    source /tmp/pelican-asf/LIBCMARKDIR.sh
+#    /tmp/pelican-asf/bin/buildsite.py dir --listen
+#
+#    or
+#
 #    pelican -r -o /site-generated -b 0.0.0.0 -l [-D] # -D: optional debug; noisy
+#
+# To build the site from the latest commit and simply listen.
+#
+#    docker run -it -p8000:8000 -v $PWD:/site --entrypoint bash pelican-asf
+#    source /tmp/pelican-asf/LIBCMARKDIR.sh
+#    git config --global user.email "<git email>"
+#    git config --global user.name "<git name>"
+#    /tmp/pelican-asf/bin/buildsite.py git --source . --sourcebranch main --project <project>
+#    cd /tmp/<project>/source
+#    pelican -b '0.0.0.0' -l
+#
+# To copy .authtokens into the image (needed if a twitter feed is read in asfdata.py)
+#
+#    cp .authtokens /root/.
 #
 
 # Build Pelican-ASF
