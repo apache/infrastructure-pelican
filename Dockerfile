@@ -30,7 +30,25 @@
 # And then run this or anything suitable in that shell to experiment:
 #
 #    source /tmp/pelican-asf/LIBCMARKDIR.sh
+#    /tmp/pelican-asf/bin/buildsite.py dir --listen
+#
+#    or
+#
 #    pelican -r -o /site-generated -b 0.0.0.0 -l [-D] # -D: optional debug; noisy
+#
+# To build the site from the latest commit and simply listen.
+#
+#    docker run -it -p8000:8000 -v $PWD:/site --entrypoint bash pelican-asf
+#    source /tmp/pelican-asf/LIBCMARKDIR.sh
+#    git config --global user.email "<git email>"
+#    git config --global user.name "<git name>"
+#    /tmp/pelican-asf/bin/buildsite.py git --source . --sourcebranch main --project <project>
+#    cd /tmp/<project>/source
+#    pelican -b '0.0.0.0' -l
+#
+# To copy .authtokens into the image (needed if a twitter feed is read in asfdata.py)
+#
+#    cp .authtokens /root/.
 #
 
 # Build Pelican-ASF
@@ -41,7 +59,7 @@ RUN apt install git curl cmake build-essential -y
 
 # Define this *after* initial setup to allow that to be cached
 # TODO: document why this needs to be defined and how to choose the commit to be used
-ARG INFRA_PELICAN_COMMIT=83e4a5dd6e28a101cc61085d2da6dbaed66e4513
+ARG INFRA_PELICAN_COMMIT=cf3173e
 
 WORKDIR /tmp/pelican-asf
 RUN git clone https://github.com/apache/infrastructure-pelican.git .
@@ -52,7 +70,7 @@ RUN ./bin/build-cmark.sh | grep LIBCMARKDIR > LIBCMARKDIR.sh
 FROM python:3.9.5-slim-buster
 
 RUN apt update && apt upgrade -y
-RUN apt install wget unzip fontconfig -y
+RUN apt install git subversion wget unzip fontconfig -y
 RUN pip install bs4 requests pyyaml ezt pelican-sitemap BeautifulSoup4
 
 ARG PELICAN_VERSION=4.6.0
