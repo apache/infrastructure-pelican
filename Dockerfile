@@ -2,11 +2,15 @@
 # Inspired from https://github.com/boonto/docker-pelican
 # (which is MIT licensed) for the Pelican-specific bits.
 #
-# To use this, build the container image with
+# To build the image, use
 #
 #    docker build -t pelican-asf .
 #
-# And run with
+# Optionally adding `--build-arg INFRA_PELICAN_COMMIT <commit_hash>`if
+# you need to use a specific commit of the infrastructure-pelican
+# repository for the ASF plugins.
+#
+# You can then run the image with
 #
 #    docker run -it -p8000:8000 -v $PWD:/site pelican-asf
 #
