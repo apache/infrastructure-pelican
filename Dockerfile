@@ -6,7 +6,7 @@
 #
 #    docker build -t pelican-asf .
 #
-# Optionally adding `--build-arg INFRA_PELICAN_COMMIT <commit_hash>`if
+# Optionally adding `--build-arg INFRA_PELICAN_COMMIT=<commit_hash>`if
 # you need to use a specific commit of the infrastructure-pelican
 # repository for the ASF plugins.
 #
