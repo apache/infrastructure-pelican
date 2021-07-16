@@ -41,7 +41,7 @@ RUN apt install git curl cmake build-essential -y
 
 # Define this *after* initial setup to allow that to be cached
 # TODO: document why this needs to be defined and how to choose the commit to be used
-ARG INFRA_PELICAN_COMMIT=83e4a5dd6e28a101cc61085d2da6dbaed66e4513
+ARG INFRA_PELICAN_COMMIT=cf3173e
 
 WORKDIR /tmp/pelican-asf
 RUN git clone https://github.com/apache/infrastructure-pelican.git .
@@ -52,7 +52,7 @@ RUN ./bin/build-cmark.sh | grep LIBCMARKDIR > LIBCMARKDIR.sh
 FROM python:3.9.5-slim-buster
 
 RUN apt update && apt upgrade -y
-RUN apt install wget unzip fontconfig -y
+RUN apt install git subversion wget unzip fontconfig -y
 RUN pip install bs4 requests pyyaml ezt pelican-sitemap BeautifulSoup4
 
 ARG PELICAN_VERSION=4.6.0
