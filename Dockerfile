@@ -6,10 +6,6 @@
 #
 #    docker build -t pelican-asf .
 #
-# Optionally adding `--build-arg INFRA_PELICAN_COMMIT=<commit_hash>`if
-# you need to use a specific commit of the infrastructure-pelican
-# repository for the ASF plugins.
-#
 # You can then run the image with
 #
 #    docker run -it -p8000:8000 -v $PWD:/site pelican-asf
@@ -51,36 +47,30 @@
 #    cp .authtokens /root/.
 #
 
-# Build Pelican-ASF
-FROM python:3.9.5-slim-buster as pelican-asf
-
-RUN apt update && apt upgrade -y
-RUN apt install git curl cmake build-essential -y
-
-# Define this *after* initial setup to allow that to be cached
-# TODO: document why this needs to be defined and how to choose the commit to be used
-ARG INFRA_PELICAN_COMMIT=cf3173e
-
-WORKDIR /tmp/pelican-asf
-RUN git clone https://github.com/apache/infrastructure-pelican.git .
-RUN git -C . checkout ${INFRA_PELICAN_COMMIT}
-RUN ./bin/build-cmark.sh | grep LIBCMARKDIR > LIBCMARKDIR.sh
-
-# Standard Pelican stuff
+# Build basic Pelican image
 FROM python:3.9.5-slim-buster
 
 RUN apt update && apt upgrade -y
+RUN apt install git curl cmake build-essential -y
 RUN apt install git subversion wget unzip fontconfig -y
 RUN pip install bs4 requests pyyaml ezt pelican-sitemap BeautifulSoup4
 
 ARG PELICAN_VERSION=4.6.0
 ARG MATPLOTLIB_VERSION=3.4.1
+
 RUN pip install pelican==${PELICAN_VERSION}
 RUN pip install matplotlib==${MATPLOTLIB_VERSION}
 
-# Copy cmark and ASF plugins here
+# Copy the current ASF code
 WORKDIR /tmp/pelican-asf
-COPY --from=pelican-asf /tmp/pelican-asf .
+# copy only the GFM build code initially, to reduce rebuilds
+COPY bin bin
+
+# build gfm
+RUN ./bin/build-cmark.sh | grep LIBCMARKDIR > LIBCMARKDIR.sh
+
+# we also need the plugins
+COPY plugins plugins
 
 # Run Pelican
 WORKDIR /site
