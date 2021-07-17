@@ -51,7 +51,7 @@
 FROM python:3.9.5-slim-buster
 
 RUN apt update && apt upgrade -y
-RUN apt install git curl cmake build-essential -y
+RUN apt install curl cmake build-essential -y
 RUN apt install git subversion wget unzip fontconfig -y
 RUN pip install bs4 requests pyyaml ezt pelican-sitemap BeautifulSoup4
 
@@ -72,6 +72,10 @@ RUN ./bin/build-cmark.sh | grep LIBCMARKDIR > LIBCMARKDIR.sh
 # we also need the plugins
 COPY plugins plugins
 
+# we may need to explain how to create a pelicanconf.yaml
+COPY pelicanconf.md pelicanconf.md
+
+# we actually need an option to copy a file in with a user's credentials
 RUN touch /root/.authtokens
 
 # Run Pelican
