@@ -76,7 +76,7 @@ COPY plugins plugins
 COPY pelicanconf.md pelicanconf.md
 
 # we actually need an option to copy a file in with a user's credentials
-RUN touch /root/.authtokens
+# RUN touch /root/.authtokens
 
 # Run Pelican
 WORKDIR /site
