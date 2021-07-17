@@ -42,11 +42,6 @@
 #    cd /tmp/<project>/source
 #    pelican -b '0.0.0.0' -l
 #
-# To copy .authtokens into the image (needed if a twitter feed is read in asfdata.py)
-#
-#    cp .authtokens /root/.
-#
-
 # Build basic Pelican image
 FROM python:3.9.5-slim-buster
 
@@ -75,8 +70,11 @@ COPY plugins plugins
 # we may need to explain how to create a pelicanconf.yaml
 COPY pelicanconf.md pelicanconf.md
 
-# we actually need an option to copy a file in with a user's credentials
-# RUN touch /root/.authtokens
+# If the site needs authtokens to build, copy them into the file .authtokens
+# and it will be picked up at build time
+# N.B. make sure the .authtokens file is not committed to the repo!
+
+RUN ln -s /site/.authtokens /root/.authtokens
 
 # Run Pelican
 WORKDIR /site
