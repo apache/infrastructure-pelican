@@ -7,3 +7,6 @@
 
 # Allow this file
 !pelicanconf.md
+
+# Allow this link
+!.authtokens

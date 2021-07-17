@@ -2,6 +2,12 @@
 # Inspired from https://github.com/boonto/docker-pelican
 # (which is MIT licensed) for the Pelican-specific bits.
 #
+# Before building the image you need to decide if you need to make use of .authtokens.
+#
+#    cp ~/.authtokens .authtokens
+# or
+#    touch .authtokens
+#
 # To build the image, use
 #
 #    docker build -t pelican-asf .
@@ -76,7 +82,7 @@ COPY plugins plugins
 COPY pelicanconf.md pelicanconf.md
 
 # we actually need an option to copy a file in with a user's credentials
-RUN touch /root/.authtokens
+COPY .authtokens /root/.authtokens
 
 # Run Pelican
 WORKDIR /site
