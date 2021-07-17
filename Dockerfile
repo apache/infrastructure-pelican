@@ -72,6 +72,8 @@ RUN ./bin/build-cmark.sh | grep LIBCMARKDIR > LIBCMARKDIR.sh
 # we also need the plugins
 COPY plugins plugins
 
+RUN touch /root/.authtokens
+
 # Run Pelican
 WORKDIR /site
 RUN mkdir -p /site-generated
