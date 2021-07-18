@@ -1,0 +1,9 @@
+# Ignore everything
+**
+
+# Allow only these directories
+!bin
+!plugins
+
+# Allow this file
+!pelicanconf.md
