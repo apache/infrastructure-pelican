@@ -43,37 +43,41 @@
 #    pelican -b '0.0.0.0' -l
 #
 # Build basic Pelican image
-FROM python:3.9.5-slim-buster
+FROM python:3.9.5-slim-buster as pelican-asf
 
 RUN apt update && apt upgrade -y
 RUN apt install curl cmake build-essential -y
-RUN apt install git subversion wget unzip fontconfig -y
-RUN pip install bs4 requests pyyaml ezt pelican-sitemap BeautifulSoup4
-
-ARG PELICAN_VERSION=4.6.0
-ARG MATPLOTLIB_VERSION=3.4.1
-
-RUN pip install pelican==${PELICAN_VERSION}
-RUN pip install matplotlib==${MATPLOTLIB_VERSION}
 
 # Copy the current ASF code
 WORKDIR /tmp/pelican-asf
 # copy only the GFM build code initially, to reduce rebuilds
 COPY bin bin
-
 # build gfm
 RUN ./bin/build-cmark.sh | grep LIBCMARKDIR > LIBCMARKDIR.sh
-
 # we also need the plugins
 COPY plugins plugins
-
 # we may need to explain how to create a pelicanconf.yaml
 COPY pelicanconf.md pelicanconf.md
+
+# Standard Pelican stuff - rebase the image to save 230MB of image size
+FROM python:3.9.5-slim-buster
+
+RUN apt update && apt upgrade -y
+RUN apt install git subversion wget unzip fontconfig -y
+RUN pip install bs4 requests pyyaml ezt pelican-sitemap BeautifulSoup4
+
+ARG PELICAN_VERSION=4.6.0
+ARG MATPLOTLIB_VERSION=3.4.1
+RUN pip install pelican==${PELICAN_VERSION}
+RUN pip install matplotlib==${MATPLOTLIB_VERSION}
+
+# Copy the built cmark and ASF 
+WORKDIR /tmp/pelican-asf
+COPY --from=pelican-asf /tmp/pelican-asf .
 
 # If the site needs authtokens to build, copy them into the file .authtokens
 # and it will be picked up at build time
 # N.B. make sure the .authtokens file is not committed to the repo!
-
 RUN ln -s /site/.authtokens /root/.authtokens
 
 # Run Pelican
