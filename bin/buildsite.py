@@ -210,14 +210,14 @@ def build_dir(args):
         sys.exit(4)
 
     if args.listen:
-        pel_options = '-r -l'
+        pel_options = '-r -l -b 0.0.0.0'
     else:
         pel_options = ''
 
     # Call pelican
     buildcmd = ('/bin/bash', '-c',
                 ### note: adding --debug can be handy
-                f'(pelican content --settings {settings_path} --o {args.output} -b 0.0.0.0 {pel_options})',
+                f'(pelican content --settings {settings_path} --o {args.output} {pel_options})',
                 )
     print("Building web site with:", buildcmd)
     env = os.environ.copy()
