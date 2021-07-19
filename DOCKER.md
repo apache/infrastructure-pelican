@@ -1,10 +1,12 @@
-# Dockerfile
+# Dockerfile
 
-To build the image:
+## Build the image:
 
     docker build -t pelican-asf .
 
-Run the image from a folder that contains your pelicanconf.yaml file and ./content folder:
+## Run the image
+
+From a folder that contains your pelicanconf.yaml file and ./content folder:
 
     docker run -it -p8000:8000 -v $PWD:/site pelican-asf
 
@@ -37,7 +39,7 @@ To build the site from the latest github commit and simply listen.
     cd /tmp/<project>/source
     pelican -b '0.0.0.0' -l
 
-The standard entry point is:
+## Standard entry point
 
     # Run Pelican
     WORKDIR /site
