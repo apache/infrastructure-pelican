@@ -87,5 +87,5 @@ RUN ln -s /site/.authtokens /root/.authtokens
 
 # Run Pelican
 WORKDIR /site
-RUN mkdir -p /site-generated
+
 ENTRYPOINT [ "/bin/bash", "-c", "source /tmp/pelican-asf/LIBCMARKDIR.sh && /tmp/pelican-asf/bin/buildsite.py dir --listen" ]
