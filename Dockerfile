@@ -64,7 +64,6 @@ FROM python:3.9.5-slim-buster
 
 RUN apt update && apt upgrade -y
 RUN apt install git subversion wget unzip fontconfig -y
-RUN pip install bs4 requests pyyaml ezt pelican-sitemap BeautifulSoup4
 
 ARG PELICAN_VERSION=4.6.0
 ARG MATPLOTLIB_VERSION=3.4.1
@@ -74,6 +73,9 @@ RUN pip install matplotlib==${MATPLOTLIB_VERSION}
 # Copy the built cmark and ASF 
 WORKDIR /tmp/pelican-asf
 COPY --from=pelican-asf /tmp/pelican-asf .
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt --no-deps
 
 # If the site needs authtokens to build, copy them into the file .authtokens
 # and it will be picked up at build time
