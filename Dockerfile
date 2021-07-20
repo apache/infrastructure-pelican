@@ -28,10 +28,6 @@
 #    source /tmp/pelican-asf/LIBCMARKDIR.sh
 #    /tmp/pelican-asf/bin/buildsite.py dir --listen
 #
-#    or
-#
-#    pelican -r -o /site-generated -b 0.0.0.0 -l [-D] # -D: optional debug; noisy
-#
 # To build the site from the latest commit and simply listen.
 #
 #    docker run -it -p8000:8000 -v $PWD:/site --entrypoint bash pelican-asf
@@ -59,11 +55,18 @@ COPY plugins plugins
 # we may need to explain how to create a pelicanconf.yaml
 COPY pelicanconf.md pelicanconf.md
 
-# Standard Pelican stuff - rebase the image to save 230MB of image size
+# Standard Pelican stuff
+# rebase the image to save up to 230MB of image size
+# image does not need curl, cmake and build-essential
 FROM python:3.9.5-slim-buster
 
 RUN apt update && apt upgrade -y
-RUN apt install git subversion wget unzip fontconfig -y
+# git is used by `buildsite.py git`
+RUN apt install git -y
+# subversion is used by asfdata.py plugin in template-site to retrieve release information
+RUN apt install subversion -y
+# we likely do not need the following
+# RUN apt install wget unzip fontconfig -y
 
 ARG PELICAN_VERSION=4.6.0
 ARG MATPLOTLIB_VERSION=3.4.1
