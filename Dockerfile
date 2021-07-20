@@ -67,8 +67,6 @@ RUN apt install git -y
 RUN apt install subversion -y
 # we likely do not need the following
 # RUN apt install wget unzip fontconfig -y
-# install the python modules we need
-RUN pip install bs4 requests pyyaml ezt pelican-sitemap BeautifulSoup4
 
 ARG PELICAN_VERSION=4.6.0
 ARG MATPLOTLIB_VERSION=3.4.1
@@ -78,6 +76,9 @@ RUN pip install matplotlib==${MATPLOTLIB_VERSION}
 # Copy the built cmark and ASF 
 WORKDIR /tmp/pelican-asf
 COPY --from=pelican-asf /tmp/pelican-asf .
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt --no-deps
 
 # If the site needs authtokens to build, copy them into the file .authtokens
 # and it will be picked up at build time
