@@ -23,6 +23,8 @@ if [ "$2" != "" ]; then TARDIR="$2"; fi
 
 ARCHIVES="https://github.com/github/cmark/archive"
 LOCAL="${TARDIR}/cmark-gfm.$VERSION.orig.tar.gz"
+
+# WARNING: this must agree with the parent directory in the tar file or the build will fail
 EXTRACTED_AS="cmark-gfm-$VERSION"
 
 # Follow redirects, and place the result into known name $LOCAL
