@@ -3,6 +3,7 @@
 # $ mkdir confs ; cd confs
 # $ .../grab.sh
 #
+# for info on this script, please see: https://github.com/apache/infrastructure-pelican/issues/23
 
 # https://github.com/search?p=2&q=org%3Aapache+filename%3Apelicanconf.py&type=Code
 sites='template-site
