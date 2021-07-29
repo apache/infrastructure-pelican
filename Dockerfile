@@ -78,7 +78,7 @@ WORKDIR /tmp/pelican-asf
 COPY --from=pelican-asf /tmp/pelican-asf .
 
 COPY requirements.txt .
-RUN pip install -r requirements.txt --no-deps
+RUN pip install -r requirements.txt
 
 # If the site needs authtokens to build, copy them into the file .authtokens
 # and it will be picked up at build time
