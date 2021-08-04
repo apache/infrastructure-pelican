@@ -107,31 +107,32 @@ def get_index(site_index, scope):
 
 
 # get site menu
-def get_menu(site_index, menus):
-    currrent_menu = None
-    site_menu = ''
-    if menus:
-        for f in menus:
-            path, page = os.path.split(f)
-            folder = page.capitalize()
-            site_menu += '<li class="nav-item active dropdown">\n'
-            site_menu += f'<a class="nav-link dropdown-toggle" href="#" id="dropdown{folder}" '
-            site_menu += f'role="button" data-toggle="dropdown" aria-expanded="false">{folder}</a>\n'
-            site_menu += f'<ul class="dropdown-menu" aria-labelledby="dropdown{folder}">\n'
-            for p in site_index:
-                if p[0] == f:
-                    # menu item for page
-                    site_menu += f'<li><a class="dropdownitem" href="{p[1]}">{p[2]}</a></li>\n'
-            site_menu += '</ul></li>\n'
-    return site_menu
-
-
+# def get_menu(site_index, menus):
+#     currrent_menu = None
+#     site_menu = ''
+#     if menus:
+#         for f in menus:
+#             path, page = os.path.split(f)
+#             folder = page.capitalize()
+#             site_menu += '<li class="nav-item active dropdown">\n'
+#             site_menu += f'<a class="nav-link dropdown-toggle" href="#" id="dropdown{folder}" '
+#             site_menu += f'role="button" data-toggle="dropdown" aria-expanded="false">{folder}</a>\n'
+#             site_menu += f'<ul class="dropdown-menu" aria-labelledby="dropdown{folder}">\n'
+#             for p in site_index:
+#                 if p[0] == f:
+#                     # menu item for page
+#                     site_menu += f'<li><a class="dropdownitem" href="{p[1]}">{p[2]}</a></li>\n'
+#             site_menu += '</ul></li>\n'
+#     return site_menu
+#
+#
 # show pages
 def show_pages(generators):
     site_index = get_pages(generators)
     asf_index = get_setting(generators, 'ASF_INDEX')
     print(asf_index)
-    set_context(generators, 'SITE_MENU', get_menu(site_index, asf_index['menus']))
+    # Not currently interested in menus this way as it is not generalizable
+    # set_context(generators, 'SITE_MENU', get_menu(site_index, asf_index['menus']))
     set_context(generators, 'SITE_INDEX', get_index(site_index, asf_index['index']))
 
 

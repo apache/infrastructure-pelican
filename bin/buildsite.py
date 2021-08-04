@@ -246,6 +246,10 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         if 'use' in ydata['plugins']:
             tdata['use'] = ydata['plugins']['use']
 
+    tdata['uses_index'] = None
+    if 'index' in tdata:
+        tdata['uses_index'] = 'yes'  # ezt.boolean
+
     if 'genid' in ydata:
         class GenIdParams:
             def setbool(self, name):
@@ -273,10 +277,6 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
     tdata['uses_run'] = None
     tdata['uses_ignore'] = None
     tdata['uses_copy'] = None
-    tdata['uses_index'] = None
-    if 'index' in tdata:
-        tdata['uses_index'] = 'yes'  # ezt.boolean
-        tdata['asfmenus'] = None # no menu processing
     if 'setup' in ydata:
         sdata = ydata['setup']
         
@@ -300,14 +300,6 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
             tdata['uses_copy'] = 'yes'  # ezt.boolean
             tdata['copy'] = sdata['copy']
             tdata['use'].append('asfcopy')  # add the plugin
-        # Create index information and menus
-        if 'menus' in sdata:
-            tdata['uses_index'] = 'yes'  # ezt.boolean
-            tdata['asfmenus'] = sdata['menus']   # yaml data file
-    if tdata['uses_index'] == 'yes':
-        tdata['use'].append('asfindex')  # add the plugin
-        if not 'index' in tdata:
-            tdata['index'] = None
 
     # if ezmd files are present then use the asfreader plugin
     ezmd_count = len(glob.glob(f'{sourcepath}/**/*.ezmd', recursive=True))

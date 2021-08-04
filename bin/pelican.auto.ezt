@@ -94,7 +94,6 @@ ASF_COPY = [ [for copy]'[copy]', [end] ]
 [if-any uses_index]
 # Configure the asfindex plugin
 ASF_INDEX = {
-    'menus': '[asfmenus]',
     'index': '[index]',
 }
 [end]
