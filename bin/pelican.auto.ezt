@@ -91,3 +91,9 @@ IGNORE_FILES = [ [for ignore]'[ignore]', [end] ]
 [if-any uses_copy]
 ASF_COPY = [ [for copy]'[copy]', [end] ]
 [end]
+[if-any uses_index]
+# Configure the asfindex plugin
+ASF_INDEX = {
+    'index': '[index]',
+}
+[end]

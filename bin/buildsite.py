@@ -246,6 +246,10 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         if 'use' in ydata['plugins']:
             tdata['use'] = ydata['plugins']['use']
 
+    tdata['uses_index'] = None
+    if 'index' in tdata:
+        tdata['uses_index'] = 'yes'  # ezt.boolean
+
     if 'genid' in ydata:
         class GenIdParams:
             def setbool(self, name):
