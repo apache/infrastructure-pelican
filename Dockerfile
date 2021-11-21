@@ -86,6 +86,9 @@ RUN pip install -r requirements.txt --no-deps
 # N.B. make sure the .authtokens file is not committed to the repo!
 RUN ln -s /site/.authtokens /root/.authtokens
 
+# buildsite.py expects python to be here:
+RUN ln -s /usr/local/bin/python3 /usr/bin/python3
+
 # Run Pelican
 WORKDIR /site
 
