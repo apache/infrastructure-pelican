@@ -193,10 +193,10 @@ def build_dir(args):
     auto_dir = '.'
 
     # Where is the YAML file?
-    yaml_dir = '.'
+    yaml_dir = args.yaml_dir
 
     # Where is the content located?
-    content_dir = '.'
+    content_dir = args.content_dir
 
     # Where are our tools?
     tool_dir = THIS_DIR
@@ -220,7 +220,7 @@ def build_dir(args):
     # Call pelican
     buildcmd = ('/bin/bash', '-c',
                 ### note: adding --debug can be handy
-                f'(pelican content --settings {settings_path} --o {args.output} {pel_options})',
+                f'(pelican {content_dir} --settings {settings_path} --o {args.output} {pel_options})',
                 )
     print("Building web site with:", buildcmd)
     env = os.environ.copy()
@@ -366,6 +366,8 @@ def main():
     parser_dir = subparsers.add_parser("dir", help = "Build source in current directory and optionally serve the result")
     parser_dir.add_argument("--output", help = "Pelican output path (default: %(default)s)", default = "site-generated")
     parser_dir.add_argument("--listen", help = "Pelican build in server mode (default: %(default)s)", action = "store_true")
+    parser_dir.add_argument('--yaml-dir', help='Where pelicanconf.yaml is located (default: %(default)s)', default='.')
+    parser_dir.add_argument('--content-dir', help='Where is the content located (default: %{default)s)', default='content')
     parser_dir.set_defaults(func=build_dir)
 
     args = parser.parse_args()
