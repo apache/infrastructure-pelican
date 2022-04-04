@@ -189,21 +189,28 @@ except:
 
 def build_dir(args):
 
-    path = sourcepath = '.'
+    # Where to place the automatically-generated CONF.PY
+    auto_dir = '.'
+
+    # Where is the YAML file?
+    yaml_dir = '.'
+
+    # Where is the content located?
+    content_dir = '.'
 
     # Where are our tools?
     tool_dir = THIS_DIR
     print("TOOLS:", tool_dir)
 
-    pelconf_yaml = os.path.join(sourcepath, AUTO_SETTINGS_YAML)
+    pelconf_yaml = os.path.join(yaml_dir, AUTO_SETTINGS_YAML)
     if not os.path.exists(pelconf_yaml):
         print(f'ERROR: {pelconf_yaml} is missing')
         print(f'  see: {AUTO_SETTINGS_HELP}')
         sys.exit(4)
 
-    settings_path = os.path.join(path, AUTO_SETTINGS)
+    settings_path = os.path.join(auto_dir, AUTO_SETTINGS)
     builtin_plugins = os.path.join(tool_dir, os.pardir, 'plugins')
-    generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], sourcepath)
+    generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], content_dir)
 
     if args.listen:
         pel_options = '-r -l -b 0.0.0.0'
@@ -219,7 +226,8 @@ def build_dir(args):
     env = os.environ.copy()
     env['LIBCMARKDIR'] = LIBCMARKDIR
     try:
-        subprocess.run(buildcmd, cwd=path, check=True, env=env)
+        ### is the cwd_necessary?
+        subprocess.run(buildcmd, cwd=auto_dir, check=True, env=env)
     except KeyboardInterrupt:
         pass
 
