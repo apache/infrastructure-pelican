@@ -20,13 +20,15 @@ PLUGIN_PATHS = [ [for p_paths]'[p_paths]', [end] ]
 PLUGINS = [ [for use]'[use]', [end] ]
 
 # All content is located at '.' (aka content/ )
-PAGE_PATHS = [ '.' ]
-STATIC_PATHS = [ '.' ]
+PAGE_PATHS = [ '[if-any pages][pages][else].[end]' ]
+STATIC_PATHS = [ [for static]'[static]', [end] ]
 
 # Where to place/link generated pages
+[if-any pages]
+PATH_METADATA = '[pages]/(?P<path_no_ext>.*)\\..*'
+[else]
 PATH_METADATA = '(?P<path_no_ext>.*)\\..*'
-### some sites have the pages in a subdir. TBD.
-#PATH_METADATA = 'pages/(?P<path_no_ext>.*)\\..*'
+[end]
 
 PAGE_SAVE_AS = '{path_no_ext}.html'
 

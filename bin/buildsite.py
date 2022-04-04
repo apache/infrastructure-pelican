@@ -241,6 +241,11 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         'theme': os.path.join(sourcepath, ydata.get('theme', 'theme/apache')),
         'debug': str(ydata.get('debug', False)),
         })
+
+    content = ydata.get('content', { })
+    tdata['pages'] = content.get('pages')
+    tdata['static'] = content.get('static_dirs', [ '.', ])
+
     tdata['p_paths'] = builtin_p_paths
     tdata['use'] = ['gfm']
     if 'plugins' in ydata:
