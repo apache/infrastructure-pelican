@@ -43,7 +43,7 @@ IS_PRODUCTION   = os.path.exists(PELICANFILES)
 AUTO_SETTINGS_YAML = 'pelicanconf.yaml'
 AUTO_SETTINGS_TEMPLATE = 'pelican.auto.ezt'
 AUTO_SETTINGS = 'pelican.auto.py'
-AUTO_SETTINGS_HELP = 'pelicanconf.md'
+AUTO_SETTINGS_HELP = 'https://github.com/apache/infrastructure-pelican/blob/master/pelicanconf.md'
 
 
 def start_build(args):
@@ -196,18 +196,14 @@ def build_dir(args):
     print("TOOLS:", tool_dir)
 
     pelconf_yaml = os.path.join(sourcepath, AUTO_SETTINGS_YAML)
-    if os.path.exists(pelconf_yaml):
-        settings_path = os.path.join(path, AUTO_SETTINGS)
-        builtin_plugins = os.path.join(tool_dir, os.pardir, 'plugins')
-        generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], sourcepath)
-    else:
-        # The default name, but we'll pass it explicitly.
-        settings_path = os.path.join(sourcepath, 'pelicanconf.py')
-        print(f'You must convert {settings_path} to {pelconf_yaml}')
-        help_path = os.path.join(tool_dir, os.pardir, AUTO_SETTINGS_HELP)
-        with open(help_path, encoding='utf-8') as f:
-            print(f.read())
+    if not os.path.exists(pelconf_yaml):
+        print(f'ERROR: {pelconf_yaml} is missing')
+        print(f'  see: {AUTO_SETTINGS_HELP}')
         sys.exit(4)
+
+    settings_path = os.path.join(path, AUTO_SETTINGS)
+    builtin_plugins = os.path.join(tool_dir, os.pardir, 'plugins')
+    generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], sourcepath)
 
     if args.listen:
         pel_options = '-r -l -b 0.0.0.0'
