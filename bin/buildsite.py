@@ -1,4 +1,12 @@
 #!/usr/bin/python3
+#
+# To run this in dev/test, then LIBCMARKDIR must be defined in the
+# environment.
+#
+# $ export LIBCMARKDIR=/path/to/cmark-gfm.0.28.3.gfm.12/lib
+#
+# ### see build-cmark.sh for building the lib
+#
 
 import sys
 
@@ -82,6 +90,24 @@ def start_build(args):
         tool_dir = THIS_DIR
     print("TOOLS:", tool_dir)
 
+    ### content_dir isn't quite right either. generate_settings() needs a
+    ### better definition of its sourcepath. And we need a proper definition
+    ### of content_dir to pass to PELICAN.
+    ### gonna brute force for now, to validate some thinking, then refine.
+
+    ### content_dir is where the PAGES are located
+    ### settings_dir is the root of themes and plugins
+
+    # Where is the content located?
+    ### for now, just look for some possibilities. This should come from
+    ### the .yaml or something.
+    content_dir = os.path.join(sourcepath, 'content')
+    settings_dir = sourcepath
+    if not os.path.exists(content_dir):
+        content_dir = os.path.join(sourcepath, 'site')
+        assert os.path.exists(content_dir)
+        settings_dir = content_dir
+
     pelconf_yaml = os.path.join(sourcepath, AUTO_SETTINGS_YAML)
     if os.path.exists(pelconf_yaml):
         settings_path = os.path.join(path, AUTO_SETTINGS)
@@ -89,7 +115,7 @@ def start_build(args):
             builtin_plugins = PLUGINS
         else:
             builtin_plugins = os.path.join(tool_dir, os.pardir, 'plugins')
-        generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], sourcepath)
+        generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], settings_dir)
     else:
         # The default name, but we'll pass it explicitly.
         settings_path = os.path.join(sourcepath, 'pelicanconf.py')
@@ -110,7 +136,7 @@ except:
     buildcmd = ('/bin/bash', '-c',
                 'source bin/activate; cd source && '
                 ### note: adding --debug can be handy
-                f'(pelican content --settings {settings_path} -o {buildpath})',
+                f'(pelican {content_dir} --settings {settings_path} -o {buildpath})',
                 )
     print("Building web site with:", buildcmd)
     env = os.environ.copy()
