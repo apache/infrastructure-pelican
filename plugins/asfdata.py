@@ -589,7 +589,10 @@ def process_twitter(handle, count, debug):
 def process_eccn(fname, debug):
     if debug:
         print('-----\nECCN:', fname)
-    j = yaml.safe_load(open(fname))
+    if fname.startswith("https://"):
+        j = yaml.safe_load(requests.get(fname).text)
+    else:
+        j = yaml.safe_load(open(fname))
 
     # versions have zero or more controlled sources
     def make_sources(sources):
