@@ -589,7 +589,7 @@ def process_twitter(handle, count, debug):
 def process_eccn(fname, debug):
     if debug:
         print('-----\nECCN:', fname)
-    if fname.beginswith("https://"):
+    if fname.startswith("https://"):
         j = yaml.safe_load(requests.get(fname).text)
     else:
         j = yaml.safe_load(open(fname))
