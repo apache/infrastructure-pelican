@@ -236,7 +236,7 @@ def build_dir(args):
 
     settings_path = os.path.join(auto_dir, AUTO_SETTINGS)
     builtin_plugins = os.path.join(tool_dir, os.pardir, 'plugins')
-    generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], content_dir)
+    generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], yaml_dir)
 
     if args.listen:
         pel_options = '-r -l -b 0.0.0.0'
