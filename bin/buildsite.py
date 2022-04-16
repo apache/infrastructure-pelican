@@ -215,7 +215,7 @@ except:
 
 def build_dir(args):
 
-    # Where to place the automatically-generated CONF.PY
+    # Where to place the automatically-generated AUTO_SETTINGS file (pelican.auto.py)
     auto_dir = '.'
 
     # Where is the YAML file?
