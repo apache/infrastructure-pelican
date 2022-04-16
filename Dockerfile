@@ -52,8 +52,6 @@ COPY bin bin
 RUN ./bin/build-cmark.sh | grep LIBCMARKDIR > LIBCMARKDIR.sh
 # we also need the plugins
 COPY plugins plugins
-# we may need to explain how to create a pelicanconf.yaml
-COPY pelicanconf.md pelicanconf.md
 
 # Standard Pelican stuff
 # rebase the image to save up to 230MB of image size
