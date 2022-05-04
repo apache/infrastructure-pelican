@@ -1,8 +1,8 @@
 # Configuring Pelican ASF
 
-Conversion of pelicanconf.py to pelicanconf.yaml.
+_Conversion of pelicanconf.py to pelicanconf.yaml._
 
-See github.com/apache/template-site and inspect a full pelicanconf.yaml
+See github.com/apache/template-site and inspect a full pelicanconf.yaml file.
 
 These are the sections:
 
