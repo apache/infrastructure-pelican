@@ -5,6 +5,7 @@ _TBD_
 ## Step One: Build libcmark-gfm
 
 ```
+$ sudo apt install cmake g++
 $ mkdir /tmp/cm
 $ cd /tmp/cm
 $ /path/to/infrastructure-pelican/bin/build-cmark.sh
