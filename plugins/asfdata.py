@@ -321,6 +321,14 @@ def process_sequence(metadata, seq, sequence, load, debug):
         else:
             print(f'{seq} - split requires an existing sequence to split')
 
+    # count the number podlings
+    if 'size' in sequence:
+        if debug:
+            print(f'size: {sequence["size"]}')
+        print(seq)
+        if seq == 'podlings_size':
+            reference = len(reference)
+
     # if this not already a sequence or dictionary then convert to a sequence
     if not is_sequence and not is_dictionary:
         # convert the dictionary/list to a sequence of objects
