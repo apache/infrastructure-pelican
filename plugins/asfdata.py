@@ -324,10 +324,8 @@ def process_sequence(metadata, seq, sequence, load, debug):
     # count the number podlings
     if 'size' in sequence:
         if debug:
-            print(f'size: {sequence["size"]}')
-        print(seq)
-        if seq == 'podlings_size':
-            reference = len(reference)
+            print(f'calculate size: {seq}')
+        reference = len(reference)
 
     # if this not already a sequence or dictionary then convert to a sequence
     if not is_sequence and not is_dictionary:
