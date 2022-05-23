@@ -321,7 +321,7 @@ def process_sequence(metadata, seq, sequence, load, debug):
         else:
             print(f'{seq} - split requires an existing sequence to split')
 
-    # count the number podlings
+    # count the lenght of the sequence
     if 'size' in sequence:
         if debug:
             print(f'calculate size: {seq}')
