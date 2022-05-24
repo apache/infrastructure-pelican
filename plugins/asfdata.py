@@ -336,6 +336,7 @@ def process_sequence(metadata, seq, sequence, load, debug):
     # save sequence in metadata
     if save_metadata:
         metadata[seq] = reference
+        metadata[f'{seq}_size'] = len(reference)
 
 
 # create metadata sequences and dictionaries from a data load
