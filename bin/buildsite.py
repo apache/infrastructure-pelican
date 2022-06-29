@@ -36,10 +36,6 @@ SVN             = '/usr/bin/svn'
 PELICANFILES    = '/home/buildslave/slave/tools'
 SCRATCH_DIR     = '/tmp'
 PLUGINS         = '/opt/infrastructure-pelican/plugins'
-if not os.path.exists(PLUGINS):
-    # Fail, if a path to the pelican plugins library is not in ENVIRON.
-    PLUGINS = os.environ['PELICAN_PLUGINS']
-print(PLUGINS)
 VERSION         = '0.28.3.gfm.12'
 LIBCMARKDIR     = f'/usr/local/asfpackages/cmark-gfm/cmark-gfm-{VERSION}/lib'
 if not os.path.exists(LIBCMARKDIR):
