@@ -36,13 +36,15 @@ SVN             = '/usr/bin/svn'
 PELICANFILES    = '/home/buildslave/slave/tools'
 SCRATCH_DIR     = '/tmp'
 PLUGINS         = '/opt/infrastructure-pelican/plugins'
-
+if not os.path.exists(PLUGINS):
+    # Fail, if a path to the pelican plugins library is not in ENVIRON.
+    PLUGINS = os.environ['PELICAN_PLUGINS']
+print(PLUGINS)
 VERSION         = '0.28.3.gfm.12'
 LIBCMARKDIR     = f'/usr/local/asfpackages/cmark-gfm/cmark-gfm-{VERSION}/lib'
 if not os.path.exists(LIBCMARKDIR):
     # Fail, if a path to the CMARK library is not in ENVIRON.
     LIBCMARKDIR = os.environ['LIBCMARKDIR']
-
 THIS_DIR        = os.path.abspath(os.path.dirname(__file__))
 
 IS_PRODUCTION   = os.path.exists(PELICANFILES)
@@ -229,14 +231,17 @@ def build_dir(args):
     print("TOOLS:", tool_dir)
 
     pelconf_yaml = os.path.join(yaml_dir, AUTO_SETTINGS_YAML)
-    if not os.path.exists(pelconf_yaml):
+    if os.path.exists(pelconf_yaml):
+        settings_path = os.path.join(auto_dir, AUTO_SETTINGS)
+        builtin_plugins = os.path.join(tool_dir, os.pardir, 'plugins')
+        generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], content_dir)
+    elif os.path.exists(os.path.join(yaml_dir, 'pelicanconf.py')):
+        settings_path = os.path.join(yaml_dir, 'pelicanconf.py')
+    else:
         print(f'ERROR: {pelconf_yaml} is missing')
         print(f'  see: {AUTO_SETTINGS_HELP}')
         sys.exit(4)
 
-    settings_path = os.path.join(auto_dir, AUTO_SETTINGS)
-    builtin_plugins = os.path.join(tool_dir, os.pardir, 'plugins')
-    generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], content_dir)
 
     if args.listen:
         pel_options = '-r -l -b 0.0.0.0'
