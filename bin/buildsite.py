@@ -230,7 +230,7 @@ def build_dir(args):
     if os.path.exists(pelconf_yaml):
         settings_path = os.path.join(auto_dir, AUTO_SETTINGS)
         builtin_plugins = os.path.join(tool_dir, os.pardir, 'plugins')
-        generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], content_dir)
+        generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ])
     elif os.path.exists(os.path.join(yaml_dir, 'pelicanconf.py')):
         settings_path = os.path.join(yaml_dir, 'pelicanconf.py')
     else:
