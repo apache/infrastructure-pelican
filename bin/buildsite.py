@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 #
 # To run this in dev/test, then LIBCMARKDIR must be defined in the
 # environment.
