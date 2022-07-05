@@ -10,7 +10,7 @@ _TBD:_ [Get your site started!](Getting_Started.md)
 Once your infrastructure-pelican site is deployed to GitHub, you can easily 
 deploy it for local testing.
 
-Download the [automatic build tool](https://github.com/apache/infrastructure-pelican/bin/build-pelican-website.sh), and run it, providing the name of your GitHub website repo. 
+Download the [automatic build tool](https://raw.githubusercontent.com/apache/infrastructure-pelican/master/bin/build-pelican-site.sh), and run it, providing the name of your GitHub website repo. 
 
 Example:
 
