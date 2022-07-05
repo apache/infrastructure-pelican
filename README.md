@@ -1,36 +1,22 @@
 # Tools for using Pelican at the ASF
 
-_TBD_
+The infrastructure-pelican repository provides a customized process
+for working with Pelican-based websites at the ASF. 
 
-## Step One: Build libcmark-gfm
+_TBD:_ [Get your site started!](Getting_Started.md)
 
-```
-$ sudo apt install cmake g++
-$ mkdir /tmp/cm
-$ cd /tmp/cm
-$ /path/to/infrastructure-pelican/bin/build-cmark.sh
-... (build output here)
-export LIBCMARKDIR='/tmp/cm/cmark-gfm-0.28.3.gfm.12/lib'
-$
-```
+# Running Local Preview Builds
 
-Copy/paste/execute that printed `export` line for use in the following steps.
+Once your infrastructure-pelican site is deployed to GitHub, you can easily 
+deploy it for local testing.
 
-(of course, you may use any location of your choice; `/tmp/cm` is
-merely an example)
+Download the [automatic build tool](https://github.com/apache/infrastructure-pelican/bin/build-pelican-website.sh), and run it, providing the name of your GitHub website repo. 
 
-### Installing libcmark-gfm via packages
+Example:
 
-_TBD: install a .deb from packages.apache.org_
+./build-pelican-website.sh infrastructure-website
 
-_TBD: maybe a macOS variant?_
+Once the process has completed, you should be able to see the rendered site by opening a web browser to http://localhost:8000/
 
-_TBD: maybe Windows?_
+Contact users@infra.apache.org for any questions or comments.
 
-## Step Two
-
-_TBD: credentials need to provided in (eg.) bb2.txt_
-
-```
-$ ./kick_build.py --repo=www-site --notify=somewhere@example.com --theme theme/apache --min-pages=200
-```
