@@ -74,7 +74,7 @@ then
   cd $IP && git pull > /dev/null && cd .. 
 else
   echo "Cloning $IP"
-  git clone $GH/$IP > /dev/null 2>&1 
+  git clone $GH/$IP 2>&1 
 fi
 
 if [ -d $REPO ];
@@ -84,7 +84,7 @@ then
   # cd $REPO && git pull > /dev/null && cd ..
 else
   echo "Cloning $REPO"
-  git clone $GH/$REPO > /dev/null 2>&1
+  git clone $GH/$REPO 2>&1
 fi
 
 # deploy our pipenv if we haven't already
