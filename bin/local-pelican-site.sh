@@ -4,6 +4,8 @@
 # and deploy it at http://localhost:8000
 #
 # requires pip3/python3, cmake, and a C compiler
+# known to work on linux/osx. probably works under WSL. 
+# will not work under basic Windows 
 
 # github prefix for cloning/updating repos
 GH="https://github.com/apache"
