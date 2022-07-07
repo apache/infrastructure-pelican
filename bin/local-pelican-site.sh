@@ -4,6 +4,8 @@
 # and deploy it at http://localhost:8000
 #
 # requires pip3/python3, cmake, and a C compiler
+# known to work on linux/osx. probably works under WSL. 
+# will not work under basic Windows.
 
 # github prefix for cloning/updating repos
 GH="https://github.com/apache"
@@ -129,8 +131,8 @@ fi
 # run the site build/deploy in our pipenv environment
 cd $(realpath $REPO)
 echo "
-pipenv run build -- build and serve local content
-pipenv run serve -- serve artifacts from $REPO
+pipenv run build -- build local content from $REPO
+pipenv run serve -- serve artifacts from $REPO/site-generated
 pipenv run clean -- clean build artifacts from $REPO
 
 When done, commit / push your changes and delete the
