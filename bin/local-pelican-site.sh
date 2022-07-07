@@ -4,18 +4,15 @@
 # and deploy it at http://localhost:8000
 #
 # requires pip3/python3, cmake, and a C compiler
-# known to work on linux/osx. probably works under WSL. 
-# will not work under basic Windows 
 
 # github prefix for cloning/updating repos
 GH="https://github.com/apache"
 
 # site_build directory path. use a /tmp dir by default
-SB="/tmp/site_build"
+SB="./pelican-local"
 
 # infrastructure-pelican repo
 IP="infrastructure-pelican"
-BUILDSITE="$IP/bin/buildsite.py"
 
 # build target site repo minus the .git suffix
 REPO=`basename $1 .git`
@@ -95,6 +92,13 @@ if [ ! -f "Pipfile.lock" ];
 then
   echo "Setting up pipenv..."
   pipenv --three install -r $IP/requirements.txt > /dev/null 2>&1 || 'echo "pipenv install failed!" && exit -1'
+  echo "
+[scripts]
+build = \"python3 $(realpath $IP)/bin/buildsite.py dir\"
+clean = \"rm -rfv $(realpath $REPO)/__pycache__ $(realpath $REPO)/site-generated $(realpath $REPO)/pelican.auto.py\"
+serve = \"python3 -m pelican content --settings $(realpath $REPO)/pelican.auto.py --o $(realpath $REPO)/site-generated -r -l -b 0.0.0.0\"
+" >> Pipfile
+
 else
   echo "Pipfile.lock found, assuming pipenv exists."
   echo "Run pipenv install -r $IP/requirements.txt to update dependencies if needed."
@@ -123,5 +127,12 @@ else
 fi
 
 # run the site build/deploy in our pipenv environment
-cd $REPO
-pipenv run ../$BUILDSITE dir --listen
+cd $(realpath $REPO)
+echo "
+pipenv run build -- build and serve local content
+pipenv run serve -- serve artifacts from $REPO
+pipenv run clean -- clean build artifacts from $REPO
+
+When done, commit / push your changes and delete the
+entire pelican-local directory.
+"
