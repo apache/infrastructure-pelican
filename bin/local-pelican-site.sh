@@ -11,7 +11,7 @@
 GH="https://github.com/apache"
 
 # site_build directory path. use a /tmp dir by default
-SB="./pelican-local"
+SB="$HOME/pelican-local"
 
 # infrastructure-pelican repo
 IP="infrastructure-pelican"
