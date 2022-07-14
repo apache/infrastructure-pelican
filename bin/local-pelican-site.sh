@@ -76,6 +76,8 @@ else
   git clone $GH/$IP 2>&1 
 fi
 
+IP="$SB/$IP"
+
 if [ -d $REPO ];
 then
   echo "$REPO exists - not updating in case there are local changes!"
@@ -85,7 +87,7 @@ else
   echo "Cloning $REPO"
   git clone $GH/$REPO 2>&1
 fi
-
+REPO="$SB/$REPO"
 # deploy our pipenv if we haven't already
 # TBD: check timestamp on $IP/requirements.txt and auto-update pipenv deps
 # right now that process is manual
@@ -94,12 +96,6 @@ if [ ! -f "Pipfile.lock" ];
 then
   echo "Setting up pipenv..."
   pipenv --three install -r $IP/requirements.txt > /dev/null 2>&1 || 'echo "pipenv install failed!" && exit -1'
-  echo "
-[scripts]
-build = \"python3 $(realpath $IP)/bin/buildsite.py dir\"
-clean = \"rm -rfv $(realpath $REPO)/__pycache__ $(realpath $REPO)/site-generated $(realpath $REPO)/pelican.auto.py\"
-serve = \"python3 -m pelican content --settings $(realpath $REPO)/pelican.auto.py --o $(realpath $REPO)/site-generated -r -l -b 0.0.0.0\"
-" >> Pipfile
 
 else
   echo "Pipfile.lock found, assuming pipenv exists."
@@ -129,12 +125,18 @@ else
 fi
 
 # run the site build/deploy in our pipenv environment
-cd $(realpath $REPO)
-echo "
-pipenv run build -- build local content from $REPO
-pipenv run serve -- serve artifacts from $REPO/site-generated
-pipenv run clean -- clean build artifacts from $REPO
 
-When done, commit / push your changes and delete the
-entire pelican-local directory.
-"
+# Clean
+if [ -d "$(realpath $REPO)/site-generated" ] && [ -f "$(realpath $REPO)/pelican.auto.py" ];
+then
+  echo "Generated local site exists! Removing..."
+  rm -rf $(realpath $REPO)/site-generated $(realpath $REPO)/pelican.auto.py
+fi
+
+# Build
+cd $REPO
+pipenv run python3 $(realpath $IP)/bin/buildsite.py dir --yaml-dir $(realpath $REPO) --content-dir "$(realpath $REPO)/content"
+
+# Serve
+pipenv run python3 -m pelican content --settings $(realpath $REPO)/pelican.auto.py --o $(realpath $REPO)/site-generated -r -l -b 0.0.0.0
+
