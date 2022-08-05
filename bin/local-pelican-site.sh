@@ -73,10 +73,13 @@ then
   cd $IP && git pull > /dev/null && cd .. 
 else
   echo "Cloning $IP"
-  git clone --branch pipenv $GH/$IP 2>&1 
+  git clone -b pipenv $GH/$IP 2>&1 
 fi
 
 IP="$SB/$IP"
+cd $IP
+pipenv install
+cd -
 
 if [ -d $REPO ];
 then

@@ -59,7 +59,7 @@ def start_build(args):
     
     # Set up virtual environment
     print("Setting up virtual python environment in %s" % path)
-    venv.create(path, clear=True, symlinks=True, with_pip=False)
+    venv.create(path, clear=True, symlinks=True, with_pip=False, system_site_packages=True)
 
     # Pull in repository data
     sourcepath = os.path.join(path, 'source')
