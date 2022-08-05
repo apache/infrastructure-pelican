@@ -73,7 +73,7 @@ then
   cd $IP && git pull > /dev/null && cd .. 
 else
   echo "Cloning $IP"
-  git clone $GH/$IP 2>&1 
+  git clone --branch pipenv $GH/$IP 2>&1 
 fi
 
 IP="$SB/$IP"
@@ -88,19 +88,6 @@ else
   git clone $GH/$REPO 2>&1
 fi
 REPO="$SB/$REPO"
-# deploy our pipenv if we haven't already
-# TBD: check timestamp on $IP/requirements.txt and auto-update pipenv deps
-# right now that process is manual
-
-if [ ! -f "Pipfile.lock" ];
-then
-  echo "Setting up pipenv..."
-  pipenv --three install -r $IP/requirements.txt > /dev/null 2>&1 || 'echo "pipenv install failed!" && exit -1'
-
-else
-  echo "Pipfile.lock found, assuming pipenv exists."
-  echo "Run pipenv install -r $IP/requirements.txt to update dependencies if needed."
-fi
 
 # figure out what version of cmark-gfm we need to use
 echo "Extracting cmark version..."
