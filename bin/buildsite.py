@@ -79,7 +79,11 @@ def start_build(args):
                         'source bin/activate; pip3 install -r source/requirements.txt'),
                        cwd=path, check=True)
     else:
-        print("On dev/test requirements.txt is not processed, skipping pip")
+        #print("On dev/test requirements.txt is not processed, skipping pip")
+        print("Installing pips")
+        subprocess.run(('/bin/bash', '-c',
+                        'source bin/activate; pip3 install -r source/requirements.txt'),
+                       cwd=path, check=True)
 
     # Where are our tools?
     if IS_PRODUCTION:
