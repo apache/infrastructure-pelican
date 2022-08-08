@@ -77,9 +77,6 @@ else
 fi
 
 IP="$SB/$IP"
-cd $IP
-pipenv install
-cd -
 
 if [ -d $REPO ];
 then
@@ -115,6 +112,10 @@ else
 fi
 
 # run the site build/deploy in our pipenv environment
+cd $IP
+pipenv install
+cd $SB
+
 
 # Clean
 if [ -d "$(realpath $REPO)/site-generated" ] && [ -f "$(realpath $REPO)/pelican.auto.py" ];
@@ -124,6 +125,7 @@ then
 fi
 
 # Build
+echo "Building site..."
 cd $REPO
 pipenv run python3 $(realpath $IP)/bin/buildsite.py dir --yaml-dir $(realpath $REPO) --content-dir "$(realpath $REPO)/content"
 
