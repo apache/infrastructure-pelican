@@ -66,6 +66,7 @@ def start_build(args):
     print("Cloning from git repository %s (branch: %s)" % (args.source, args.sourcebranch))
     subprocess.run((GIT, 'clone', '--branch', args.sourcebranch, '--depth=1', '--no-single-branch', args.source, sourcepath),
                    check=True)
+    subprocess.run(('/bin/bash', '-c', 'pipenv install'), cwd=path, check=True)
 
     # Activate venv and install pips if needed. For dev/test, we will
     # assume that all requirements are available at the system level,
@@ -73,14 +74,14 @@ def start_build(args):
     ### note: this makes it difficult to test requirements.txt, but it
     ### will do for now. Debugging requirements.txt failures on the
     ### production buildbot is not difficult to correct.
-    if IS_PRODUCTION and os.path.exists(os.path.join(sourcepath, 'requirements.txt')):
-        print("Installing pips")
-        subprocess.run(('/bin/bash', '-c', 'pipenv install'), cwd=path, check=True)
-#        subprocess.run(('/bin/bash', '-c',
-#                        'source bin/activate; pip3 install -r source/requirements.txt'),
-#                       cwd=path, check=True)
-    else:
-        print("On dev/test requirements.txt is not processed, skipping pip")
+#    if IS_PRODUCTION and os.path.exists(os.path.join(sourcepath, 'requirements.txt')):
+#        print("Installing pips")
+#        subprocess.run(('/bin/bash', '-c', 'pipenv install'), cwd=path, check=True)
+##        subprocess.run(('/bin/bash', '-c',
+##                        'source bin/activate; pip3 install -r source/requirements.txt'),
+##                       cwd=path, check=True)
+#    else:
+#        print("On dev/test requirements.txt is not processed, skipping pip")
 
     # Where are our tools?
     if IS_PRODUCTION:
