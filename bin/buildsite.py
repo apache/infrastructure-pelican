@@ -59,7 +59,7 @@ def start_build(args):
     
     # Set up virtual environment
     print("Setting up virtual python environment in %s" % path)
-    venv.create(path, clear=True, symlinks=True, with_pip=False, system_site_packages=True)
+    venv.create(path, clear=True, symlinks=True, with_pip=False)
 
     # Pull in repository data
     sourcepath = os.path.join(path, 'source')
@@ -79,11 +79,7 @@ def start_build(args):
                         'source bin/activate; pip3 install -r source/requirements.txt'),
                        cwd=path, check=True)
     else:
-        #print("On dev/test requirements.txt is not processed, skipping pip")
-        print("Installing pips")
-        subprocess.run(('/bin/bash', '-c',
-                        'source bin/activate; pip3 install -r source/requirements.txt'),
-                       cwd=path, check=True)
+        print("On dev/test requirements.txt is not processed, skipping pip")
 
     # Where are our tools?
     if IS_PRODUCTION:
