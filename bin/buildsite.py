@@ -59,7 +59,7 @@ def start_build(args):
     
     # Set up virtual environment
     print("Setting up virtual python environment in %s" % path)
-    venv.create(path, clear=True, symlinks=True, with_pip=False)
+    #venv.create(path, clear=True, symlinks=True, with_pip=False)
 
     # Pull in repository data
     sourcepath = os.path.join(path, 'source')
@@ -75,9 +75,10 @@ def start_build(args):
     ### production buildbot is not difficult to correct.
     if IS_PRODUCTION and os.path.exists(os.path.join(sourcepath, 'requirements.txt')):
         print("Installing pips")
-        subprocess.run(('/bin/bash', '-c',
-                        'source bin/activate; pip3 install -r source/requirements.txt'),
-                       cwd=path, check=True)
+        subprocess.run(('/bin/bash', '-c', 'pipenv install'), cwd=path, check=True)
+#        subprocess.run(('/bin/bash', '-c',
+#                        'source bin/activate; pip3 install -r source/requirements.txt'),
+#                       cwd=path, check=True)
     else:
         print("On dev/test requirements.txt is not processed, skipping pip")
 
@@ -132,9 +133,9 @@ except:
     buildpath = os.path.join(path, 'build/output')
     os.makedirs(buildpath, exist_ok = True)
     buildcmd = ('/bin/bash', '-c',
-                'source bin/activate; cd source && '
+                'cd source && '
                 ### note: adding --debug can be handy
-                f'(pelican {content_dir} --settings {settings_path} -o {buildpath})',
+                f'(pipenv run pelican {content_dir} --settings {settings_path} -o {buildpath})',
                 )
     print("Building web site with:", buildcmd)
     env = os.environ.copy()
