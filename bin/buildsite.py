@@ -290,7 +290,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
                 def __init__(self):
                     sitemap_data = ydata['plugins']['sitemap']
                     for key in sitemap_data:
-                        self.setParam(self, key)
+                        self.setParam(key)
 
                 def setParam(self, name):
                     setattr(self, name, str(ydata['plugins']['sitemap'].get(name, None)))
