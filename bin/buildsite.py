@@ -275,12 +275,20 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
 
     tdata['p_paths'] = builtin_p_paths
     tdata['use'] = ['gfm']
+    
+    tdata['uses_sitemap'] = None
     if 'plugins' in ydata:
         if 'paths' in ydata['plugins']:
             for p in ydata['plugins']['paths']:
                 tdata['p_paths'].append(os.path.join(sourcepath, p))
+
         if 'use' in ydata['plugins']:
             tdata['use'] = ydata['plugins']['use']
+        
+        if 'sitemap' in sdata:
+            tdata['uses_sitemap'] = 'yes'  # ezt.boolean
+            tdata['sitemap'] = ydata['sitemap']
+            tdata['use'].append('sitemap')  # add the plugin
 
     tdata['uses_index'] = None
     if 'index' in tdata:
@@ -313,7 +321,6 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
     tdata['uses_run'] = None
     tdata['uses_ignore'] = None
     tdata['uses_copy'] = None
-    tdata['uses_sitemap'] = None
     if 'setup' in ydata:
         sdata = ydata['setup']
         
@@ -337,10 +344,6 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
             tdata['uses_copy'] = 'yes'  # ezt.boolean
             tdata['copy'] = sdata['copy']
             tdata['use'].append('asfcopy')  # add the plugin
-        if 'sitemap' in sdata:
-            tdata['uses_sitemap'] = 'yes'  # ezt.boolean
-            tdata['sitemap'] = sdata['sitemap']
-            tdata['use'].append('sitemap')  # add the plugin
 
     # if ezmd files are present then use the asfreader plugin
     ezmd_count = len(glob.glob(f'{sourcepath}/**/*.ezmd', recursive=True))
