@@ -286,8 +286,18 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
             tdata['use'] = ydata['plugins']['use']
         
         if 'sitemap' in ydata['plugins']:
+            class SiteMapParams:
+                def __init__(self):
+                    sitemap_data = ydata['plugins']['sitemap']
+                    for key in sitemap_data:
+                        self.setParam(self, key)
+
+                def setParam(self, name):
+                    setattr(self, name, str(ydata['plugins']['sitemap'].get(name, None)))
+
+            sitemap_params = SiteMapParams()
             tdata['uses_sitemap'] = 'yes'  # ezt.boolean
-            tdata['sitemap'] = ydata['plugins']['sitemap']
+            tdata['sitemap'] = sitemap_params
             tdata['use'].append('sitemap')  # add the plugin
 
     tdata['uses_index'] = None
