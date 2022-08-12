@@ -271,7 +271,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
 
     content = ydata.get('content', { })
     
-    __handled_keys = ["pages", "articles", "archives", "authors", "categories", "tags"]
+    __handled_keys = ["pages"]
     def __handleContentType(content_category):
         t = {}
         for key in content_category.keys():
