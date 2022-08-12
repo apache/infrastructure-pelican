@@ -285,7 +285,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         if 'use' in ydata['plugins']:
             tdata['use'] = ydata['plugins']['use']
         
-        if 'sitemap' in ydata:
+        if 'sitemap' in ydata['plugins']:
             tdata['uses_sitemap'] = 'yes'  # ezt.boolean
             tdata['sitemap'] = ydata['sitemap']
             tdata['use'].append('sitemap')  # add the plugin
