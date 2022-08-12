@@ -72,8 +72,11 @@ ASF_GENID = {
     'debug': [debug],
 }
 [end]
+
 [if-any uses_sitemap]
-SITEMAP = [sitemap]
+SITEMAP = {
+    [sitemap]
+}
 [end]
 
 [if-any uses_data]
