@@ -289,8 +289,13 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
             class SiteMapParams:
                 def __init__(self):
                     sitemap_data = ydata['plugins']['sitemap']
-                    for key in sitemap_data:
-                        self.setParam(key)
+                    def parse(data):
+                        for key in data:
+                            if isinstance(sitemap_data[key], dict):
+                                parse(data)
+                            else:
+                                self.setParam(key)
+                    self.parse(sitemap_data)
 
                 def setParam(self, name):
                     setattr(self, name, str(ydata['plugins']['sitemap'].get(name, None)))
