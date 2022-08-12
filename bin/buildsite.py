@@ -291,15 +291,19 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
                     sitemap_data = ydata['plugins']['sitemap']
                     self.parse(sitemap_data)
 
-                def parse(self, data):
+                def parse(self, data, context=None):
                     for key in data:
                         if isinstance(data[key], dict):
-                            self.parse(data)
+                            if context:
+                                t = context.key = {}
+                            else
+                                t = self.key = {}
+                            self.parse(data[key], t)
                         else:
-                            self.setParam(key)
+                            self.setParam(data, key)
 
-                def setParam(self, name):
-                    setattr(self, name, str(ydata['plugins']['sitemap'].get(name, None)))
+                def setParam(self, data, name):
+                    setattr(self, name, str(data.get(name, None)))
 
             sitemap_params = SiteMapParams()
             tdata['uses_sitemap'] = 'yes'  # ezt.boolean
