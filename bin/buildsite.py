@@ -296,7 +296,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
                         if isinstance(data[key], dict):
                             if context:
                                 t = context.key = {}
-                            else
+                            else:
                                 t = self.key = {}
                             self.parse(data[key], t)
                         else:
