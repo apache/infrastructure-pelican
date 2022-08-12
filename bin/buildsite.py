@@ -294,7 +294,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
                 def parse(self, data):
                     for key in data:
                         if isinstance(data[key], dict):
-                            parse(data)
+                            self.parse(data)
                         else:
                             self.setParam(key)
 
