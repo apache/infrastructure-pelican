@@ -20,15 +20,7 @@ PLUGIN_PATHS = [ [for p_paths]'[p_paths]', [end] ]
 PLUGINS = [ [for use]'[use]', [end] ]
 
 # All content is located at '.' (aka content/ )
-
-PAGE_PATHS = [ '[if pages_path][pages_path][else].[end]' ]
-[if page_url]
-PAGE_URL = '[page_url]'
-[end]
-[if page_save_as]
-PAGE_SAVE_AS = '[page_save_as]'
-[end]
-
+PAGE_PATHS = [ '[if-any pages][pages][else].[end]' ]
 STATIC_PATHS = [ [for static]'[static]', [end] ]
 
 # Where to place/link generated pages
