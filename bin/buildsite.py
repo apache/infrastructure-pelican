@@ -270,8 +270,21 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         })
 
     content = ydata.get('content', { })
-    tdata['pages'] = content.get('pages')
+    
+    __handled_keys = ["pages", "articles", "archives", "authors", "categories", "tags"]
+    def __handleContentType(content_category):
+        t = {}
+        for key in content_category.keys():
+            t[key] = content_category[key]
+        return t
+    
+    for key in content:
+        if key in __handled_keys:
+            tdata.update(__handleContentType(content.get(key)))
+    
     tdata['static'] = content.get('static_dirs', [ '.', ])
+    tdata['articles'] = content.get('articles')
+
 
     tdata['p_paths'] = builtin_p_paths
     tdata['use'] = ['gfm']
