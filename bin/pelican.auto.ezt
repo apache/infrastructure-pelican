@@ -72,6 +72,10 @@ ASF_GENID = {
     'debug': [debug],
 }
 [end]
+[if-any sitemap]
+SITEMAP = [sitemap]
+[end]
+
 [if-any uses_data]
 # Configure the asfdata plugin
 ASF_DATA = {
