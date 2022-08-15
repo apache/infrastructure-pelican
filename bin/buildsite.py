@@ -290,7 +290,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
                 def __init__(self, **sitemap):
                     self.__dict__.update(sitemap)
 
-            sitemap_params = SiteMapParams(ydata['plugins']['sitemap'])
+            sitemap_params = SiteMapParams(**ydata['plugins']['sitemap'])
             tdata['uses_sitemap'] = 'yes'  # ezt.boolean
             tdata['sitemap'] = sitemap_params
             tdata['use'].append('sitemap')  # add the plugin
