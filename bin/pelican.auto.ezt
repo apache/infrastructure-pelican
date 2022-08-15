@@ -86,7 +86,7 @@ SITEMAP = {
         "indexes": [sitemap.changefreqs.indexes]
         "pages": [sitemap.changefreqs.pages]
     }
-    "exclude": [if-any sitemap.exclude][ [for sitemap.exclude][sitemap.exclude][end] ][else][][end]
+    "exclude": [if-any sitemap.exclude][sitemap.exclude][else][][end]
 }
 [end]
 
