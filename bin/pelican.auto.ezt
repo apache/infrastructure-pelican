@@ -75,6 +75,7 @@ ASF_GENID = {
 
 [if-any uses_sitemap]
 SITEMAP = {
+    "exclude": [sitemap.exclude],
     "format": '[sitemap.format]',
     "priorities": {
         "articles": [sitemap.priorities.articles],
@@ -86,7 +87,6 @@ SITEMAP = {
         "indexes": [sitemap.changefreqs.indexes]
         "pages": [sitemap.changefreqs.pages]
     }
-    "exclude": [sitemap.exclude]
 }
 [end]
 
