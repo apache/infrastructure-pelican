@@ -291,7 +291,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         
         if 'sitemap' in ydata['plugins']:
             sitemap_params=_helper(
-                    exclude=ydata['plugins']['sitemap']['exclude'],
+                    exclude=str(ydata['plugins']['sitemap']['exclude']),
                     format=ydata['plugins']['sitemap']['format'],
                     priorities=_helper(
                         articles=ydata['plugins']['sitemap']['priorities']['articles'],
