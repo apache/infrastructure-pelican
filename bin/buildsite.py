@@ -315,13 +315,15 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
 
     if 'genid' in ydata:
         genid = _helper(
-                unsafe=setattr(self, name, str(ydata['genid'].get(name, False))),
-                metadata=setattr(self, name, str(ydata['genid'].get(name, False))),
-                elements=setattr(self, name, str(ydata['genid'].get(name, False))),
-                permalinks=setattr(self, name, str(ydata['genid'].get(name, False))),
-                tables=setattr(self, name, str(ydata['genid'].get(name, False))),
-                headings_depth=setattr(self, name, ydata['genid'].get(name)),
-                toc_depth=,setattr(self, name, ydata['genid'].get(name))
+                unsafe=str(ydata['genid'].get(name, False)),
+                metadata=str(ydata['genid'].get(name, False)),
+                elements=str(ydata['genid'].get(name, False)),
+                permalinks=str(ydata['genid'].get(name, False)),
+                tables=str(ydata['genid'].get(name, False)),
+                headings_depth=ydata['genid'].get(name),
+                toc_depth=ydata['genid'].get(name)
+                )
+
         tdata['uses_genid'] = 'yes'  # ezt.boolean()
         tdata['genid'] = genid
 
