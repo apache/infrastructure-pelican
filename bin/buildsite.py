@@ -51,6 +51,10 @@ AUTO_SETTINGS_TEMPLATE = 'pelican.auto.ezt'
 AUTO_SETTINGS = 'pelican.auto.py'
 AUTO_SETTINGS_HELP = 'https://github.com/apache/infrastructure-pelican/blob/master/pelicanconf.md'
 
+class _helper:
+    def __init__(self, **kw):
+        vars(self).update(kw)
+
 
 def start_build(args):
     """ The actual build steps """
@@ -286,17 +290,21 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
             tdata['use'] = ydata['plugins']['use']
         
         if 'sitemap' in ydata['plugins']:
-            class SiteMapParams:
-                def __init__(self, in_dict:dict):
-                    assert isinstance(in_dict, dict)
-                    for key, val in in_dict.items():
-                        if isinstance(val, (list, tuple)):
-                            setattr(self, key, [SiteMapParams(x) if isinstance(x, dict) else x for x in val])
-                        else:
-                            setattr(self, key, SiteMapParams(val) if isinstance(val, dict) else val)
+            sitemap_params=_helper(
+                    excludes=ydata['plugins']['sitemap']['excludes'],
+                    format=ydata['plugins']['sitemap']['format'],
+                    priorities=_helper(
+                        articles=ydata['plugins']['sitemap']['priorities']['articles'],
+                        indexes=ydata['plugins']['sitemap']['priorities']['indexes'],
+                        pages=ydata['plugins']['sitemap']['priorities']['pages'],
+                        ),
+                    changefreqs=_helper(
+                        articles=ydata['plugins']['sitemap']['changefreqs']['articles'],
+                        indexes=ydata['plugins']['sitemap']['changefreqs']['indexes'],
+                        pages=ydata['plugins']['sitemap']['changefreqs']['pages']
+                        ),
+                    )
 
-            sitemap_params = SiteMapParams(ydata['plugins']['sitemap'])
-            setattr(sitemap_params, 'exclude', "[ %s ]" % ", ".join([ "\"%s\"" % item for item in sitemap_params.exclude ]))
             tdata['uses_sitemap'] = 'yes'  # ezt.boolean
             tdata['sitemap'] = sitemap_params
             tdata['use'].append('sitemap')  # add the plugin
@@ -306,21 +314,14 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         tdata['uses_index'] = 'yes'  # ezt.boolean
 
     if 'genid' in ydata:
-        class GenIdParams:
-            def setbool(self, name):
-                setattr(self, name, str(ydata['genid'].get(name, False)))
-            def setdepth(self, name):
-                setattr(self, name, ydata['genid'].get(name))
-
-        genid = GenIdParams()
-        genid.setbool('unsafe')
-        genid.setbool('metadata')
-        genid.setbool('elements')
-        genid.setbool('permalinks')
-        genid.setbool('tables')
-        genid.setdepth('headings_depth')
-        genid.setdepth('toc_depth')
-
+        genid = _helper(
+                unsafe=setattr(self, name, str(ydata['genid'].get(name, False))),
+                metadata=setattr(self, name, str(ydata['genid'].get(name, False))),
+                elements=setattr(self, name, str(ydata['genid'].get(name, False))),
+                permalinks=setattr(self, name, str(ydata['genid'].get(name, False))),
+                tables=setattr(self, name, str(ydata['genid'].get(name, False))),
+                headings_depth=setattr(self, name, ydata['genid'].get(name)),
+                toc_depth=,setattr(self, name, ydata['genid'].get(name))
         tdata['uses_genid'] = 'yes'  # ezt.boolean()
         tdata['genid'] = genid
 
