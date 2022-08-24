@@ -290,18 +290,19 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
             tdata['use'] = ydata['plugins']['use']
         
         if 'sitemap' in ydata['plugins']:
-            sitemap_params=_helper(
-                    exclude=str(ydata['plugins']['sitemap']['exclude']),
-                    format=ydata['plugins']['sitemap']['format'],
+            sm = ydata['plugins']['sitemap']
+            sitemap_params =_helper(
+                    exclude=str(sm['exclude']),
+                    format=sm['format'],
                     priorities=_helper(
-                        articles=ydata['plugins']['sitemap']['priorities']['articles'],
-                        indexes=ydata['plugins']['sitemap']['priorities']['indexes'],
-                        pages=ydata['plugins']['sitemap']['priorities']['pages'],
+                        articles=sm['priorities']['articles'],
+                        indexes=sm['priorities']['indexes'],
+                        pages=sm['priorities']['pages'],
                         ),
                     changefreqs=_helper(
-                        articles=ydata['plugins']['sitemap']['changefreqs']['articles'],
-                        indexes=ydata['plugins']['sitemap']['changefreqs']['indexes'],
-                        pages=ydata['plugins']['sitemap']['changefreqs']['pages']
+                        articles=sm['changefreqs']['articles'],
+                        indexes=sm['changefreqs']['indexes'],
+                        pages=sm['changefreqs']['pages'],
                         ),
                     )
 
@@ -315,13 +316,13 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
 
     if 'genid' in ydata:
         genid = _helper(
-                unsafe=str(ydata['genid'].get(name, False)),
-                metadata=str(ydata['genid'].get(name, False)),
-                elements=str(ydata['genid'].get(name, False)),
-                permalinks=str(ydata['genid'].get(name, False)),
-                tables=str(ydata['genid'].get(name, False)),
-                headings_depth=ydata['genid'].get(name),
-                toc_depth=ydata['genid'].get(name)
+                unsafe=str(ydata['genid'].get('unsafe', False)),
+                metadata=str(ydata['genid'].get('metadata', False)),
+                elements=str(ydata['genid'].get('elements', False)),
+                permalinks=str(ydata['genid'].get('permalinks', False)),
+                tables=str(ydata['genid'].get('tables', False)),
+                headings_depth=ydata['genid'].get('headings_depth'),
+                toc_depth=ydata['genid'].get('toc_depth'),
                 )
 
         tdata['uses_genid'] = 'yes'  # ezt.boolean()
