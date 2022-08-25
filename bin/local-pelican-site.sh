@@ -74,7 +74,7 @@ then
 else
   echo "Cloning $IP"
   # Sometimes useful to add -b <branch> for buildsite testing
-  git clone -b sitemap-plugin $GH/$IP 2>&1 
+  git clone $GH/$IP 2>&1 
 fi
 
 IP="$SB/$IP"
