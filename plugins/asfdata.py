@@ -36,6 +36,7 @@ import yaml
 import ezt
 
 import xml.dom.minidom
+import xml.parsers.expat
 
 import pelican.plugins.signals
 import pelican.utils
@@ -510,11 +511,15 @@ def process_blog(feed, count, words, debug):
     if debug:
         print(f'blog feed: {feed}')
     content = requests.get(feed).text
-    dom = xml.dom.minidom.parseString(content)
-    # dive into the dom to get 'entry' elements
-    entries = dom.getElementsByTagName('entry')
-    # we only want count many from the beginning
-    entries = entries[:count]
+    # See INFRA-23636: cannot check the page status, so just catch parsing errors
+    try:
+        dom = xml.dom.minidom.parseString(content)
+        # dive into the dom to get 'entry' elements
+        entries = dom.getElementsByTagName('entry')
+        # we only want count many from the beginning
+        entries = entries[:count]
+    except xml.parsers.expat.ExpatError:
+        entries = []
     v = [ ]
     for entry in entries:
         if debug:
