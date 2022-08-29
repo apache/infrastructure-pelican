@@ -483,7 +483,7 @@ def get_node_text(nodelist):
     """http://www.python.org/doc/2.5.2/lib/minidom-example.txt"""
     rc = ''
     for node in nodelist:
-        if node.nodeType in [node.CDATA_SECTION_NODE, node.TEXT_NODE]
+        if node.nodeType in [node.CDATA_SECTION_NODE, node.TEXT_NODE]:
             rc = rc + node.data
     return rc
 
