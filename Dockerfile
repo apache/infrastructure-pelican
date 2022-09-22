@@ -66,6 +66,11 @@ RUN apt install subversion -y
 
 ARG PELICAN_VERSION=4.6.0
 ARG MATPLOTLIB_VERSION=3.4.1
+# Workaround for https://github.com/apache/infrastructure-pelican/issues/29
+# to make sure we install versions of jinja and pelican that don't conflict.
+# Installing jinja explicitly can be removed once we upgrade to pelican
+# 4.7.0 or later
+RUN pip install jinja2==3.0.3
 RUN pip install pelican==${PELICAN_VERSION}
 RUN pip install matplotlib==${MATPLOTLIB_VERSION}
 
