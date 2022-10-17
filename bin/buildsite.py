@@ -51,6 +51,10 @@ AUTO_SETTINGS_TEMPLATE = 'pelican.auto.ezt'
 AUTO_SETTINGS = 'pelican.auto.py'
 AUTO_SETTINGS_HELP = 'https://github.com/apache/infrastructure-pelican/blob/master/pelicanconf.md'
 
+class _helper:
+    def __init__(self, **kw):
+        vars(self).update(kw)
+
 
 def start_build(args):
     """ The actual build steps """
@@ -275,32 +279,51 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
 
     tdata['p_paths'] = builtin_p_paths
     tdata['use'] = ['gfm']
+    
+    tdata['uses_sitemap'] = None
     if 'plugins' in ydata:
         if 'paths' in ydata['plugins']:
             for p in ydata['plugins']['paths']:
                 tdata['p_paths'].append(os.path.join(sourcepath, p))
+
         if 'use' in ydata['plugins']:
             tdata['use'] = ydata['plugins']['use']
+        
+        if 'sitemap' in ydata['plugins']:
+            sm = ydata['plugins']['sitemap']
+            sitemap_params =_helper(
+                    exclude=str(sm['exclude']),
+                    format=sm['format'],
+                    priorities=_helper(
+                        articles=sm['priorities']['articles'],
+                        indexes=sm['priorities']['indexes'],
+                        pages=sm['priorities']['pages'],
+                        ),
+                    changefreqs=_helper(
+                        articles=sm['changefreqs']['articles'],
+                        indexes=sm['changefreqs']['indexes'],
+                        pages=sm['changefreqs']['pages'],
+                        ),
+                    )
+
+            tdata['uses_sitemap'] = 'yes'  # ezt.boolean
+            tdata['sitemap'] = sitemap_params
+            tdata['use'].append('sitemap')  # add the plugin
 
     tdata['uses_index'] = None
     if 'index' in tdata:
         tdata['uses_index'] = 'yes'  # ezt.boolean
 
     if 'genid' in ydata:
-        class GenIdParams:
-            def setbool(self, name):
-                setattr(self, name, str(ydata['genid'].get(name, False)))
-            def setdepth(self, name):
-                setattr(self, name, ydata['genid'].get(name))
-
-        genid = GenIdParams()
-        genid.setbool('unsafe')
-        genid.setbool('metadata')
-        genid.setbool('elements')
-        genid.setbool('permalinks')
-        genid.setbool('tables')
-        genid.setdepth('headings_depth')
-        genid.setdepth('toc_depth')
+        genid = _helper(
+                unsafe=str(ydata['genid'].get('unsafe', False)),
+                metadata=str(ydata['genid'].get('metadata', False)),
+                elements=str(ydata['genid'].get('elements', False)),
+                permalinks=str(ydata['genid'].get('permalinks', False)),
+                tables=str(ydata['genid'].get('tables', False)),
+                headings_depth=ydata['genid'].get('headings_depth'),
+                toc_depth=ydata['genid'].get('toc_depth'),
+                )
 
         tdata['uses_genid'] = 'yes'  # ezt.boolean()
         tdata['genid'] = genid

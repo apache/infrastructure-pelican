@@ -73,6 +73,7 @@ then
   cd $IP && git pull > /dev/null && cd .. 
 else
   echo "Cloning $IP"
+  # Sometimes useful to add -b <branch> for buildsite testing
   git clone $GH/$IP 2>&1 
 fi
 

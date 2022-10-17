@@ -1,5 +1,5 @@
 pelican
-#pelican-sitemap
+pelican-sitemap # pelican plugin offering
 soupsieve # needed by BeautifulSoup4
 BeautifulSoup4 # needed by several plugins
 ezt # needed by several plugins and buildsite.py
