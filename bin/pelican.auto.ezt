@@ -46,6 +46,10 @@ ARCHIVES_SAVE_AS = ''
 # Disable articles by pointing to a (should-be-absent) subdir
 ARTICLE_PATHS = [ 'articles' ]
 
+# needed to create blogs page
+ARTICLE_URL = 'articles/{slug}.html'
+ARTICLE_SAVE_AS = 'articles/{slug}.html'
+
 # Disable all processing of .html files
 READERS = { 'html': None, }
 
