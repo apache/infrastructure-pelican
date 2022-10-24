@@ -44,11 +44,11 @@ AUTHORS_SAVE_AS = ''
 ARCHIVES_SAVE_AS = ''
 
 # Disable articles by pointing to a (should-be-absent) subdir
-ARTICLE_PATHS = [ 'articles' ]
+ARTICLE_PATHS = [ 'blog' ]
 
 # needed to create blogs page
-ARTICLE_URL = 'articles/{slug}.html'
-ARTICLE_SAVE_AS = 'articles/{slug}.html'
+ARTICLE_URL = 'blog/{slug}.html'
+ARTICLE_SAVE_AS = 'blog/{slug}.html'
 
 # Disable all processing of .html files
 READERS = { 'html': None, }
