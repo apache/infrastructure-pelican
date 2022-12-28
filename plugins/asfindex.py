@@ -17,7 +17,7 @@
 # under the License.
 #
 #
-# asfindex.py - Pelican plugin that runs shell scripts during initialization
+# asfindex.py - Pelican plugin that generates indexes
 #
 
 import sys
