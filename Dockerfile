@@ -65,9 +65,7 @@ RUN apt install subversion -y
 # RUN apt install wget unzip fontconfig -y
 
 ARG PELICAN_VERSION=4.7.0
-ARG MATPLOTLIB_VERSION=3.4.1
 RUN pip install pelican==${PELICAN_VERSION}
-RUN pip install matplotlib==${MATPLOTLIB_VERSION}
 
 # Copy the built cmark and ASF 
 WORKDIR /tmp/pelican-asf
