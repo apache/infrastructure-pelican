@@ -335,8 +335,6 @@ def process_sequence(metadata, seq, sequence, load, debug):
             reference = sequence_dict(seq, reference)
         elif isinstance(reference, list):
             reference = sequence_list(seq, reference)
-        else:
-            print(f'{seq}: cannot proceed invalid type, must be dict or list')
 
     # save sequence in metadata
     if save_metadata:
