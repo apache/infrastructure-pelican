@@ -589,14 +589,18 @@ def process_twitter(handle, count, debug):
     url = f'https://api.twitter.com/2/tweets/search/recent?query={query}&{tweet_fields}'
     headers = {'Authorization': f'Bearer {bearer_token}'}
     load = connect_to_endpoint(url, headers)
+    result_count = load['meta']['result_count']
+    if result_count == 0:
+        print(f'WARN: No Twitter search results for {handle}')
+        return sequence_list('twitter',[{ 'text': 'No tweets found' }])
     if 'data' not in load:
         print('WARN: "data" not in Twitter response')
-        print(load) # DEBUG
+        print(load) # DEBUG; should not happen if result_count > 0
         return sequence_list('twitter',[{
             'text': 'Unable to extract Twitter data'
         }])
     reference = sequence_list('twitter', load['data'])
-    if load['meta']['result_count'] < count:
+    if result_count < count:
         v = reference
     else:
         v = reference[:count]
