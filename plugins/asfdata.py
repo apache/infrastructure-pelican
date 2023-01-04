@@ -588,6 +588,10 @@ def process_twitter(handle, count, debug):
     url = f'https://api.twitter.com/2/tweets/search/recent?query={query}&{tweet_fields}'
     headers = {'Authorization': f'Bearer {bearer_token}'}
     load = connect_to_endpoint(url, headers)
+    if 'data' not in load:
+        return sequence_list('twitter',{
+            'text': 'Unable to extract Twitter data'
+        })
     reference = sequence_list('twitter', load['data'])
     if load['meta']['result_count'] < count:
         v = reference
