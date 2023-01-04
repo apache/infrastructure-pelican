@@ -591,8 +591,8 @@ def process_twitter(handle, count, debug):
     load = connect_to_endpoint(url, headers)
     result_count = load['meta']['result_count']
     if result_count == 0:
-        print(f'WARN: No Twitter search results for {handle}')
-        return sequence_list('twitter',[{ 'text': 'No tweets found' }])
+        print(f'WARN: No recent tweets for {handle}')
+        return sequence_list('twitter',[{ 'text': 'No recent tweets found' }])
     if 'data' not in load:
         print('WARN: "data" not in Twitter response')
         print(load) # DEBUG; should not happen if result_count > 0
