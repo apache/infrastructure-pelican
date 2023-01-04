@@ -33,6 +33,7 @@ import ezt
 # Command definitions - put into a conf later on?
 GIT             = '/usr/bin/git'
 SVN             = '/usr/bin/svn'
+BASH            = '/bin/bash'
 PELICANFILES    = '/home/buildslave/slave/tools'
 SCRATCH_DIR     = '/tmp'
 PLUGINS         = '/opt/infrastructure-pelican/plugins'
@@ -51,6 +52,8 @@ AUTO_SETTINGS_TEMPLATE = 'pelican.auto.ezt'
 AUTO_SETTINGS = 'pelican.auto.py'
 AUTO_SETTINGS_HELP = 'https://github.com/apache/infrastructure-pelican/blob/master/pelicanconf.md'
 
+# default config file name
+PELICAN_CONF = 'pelicanconf.py'
 class _helper:
     def __init__(self, **kw):
         vars(self).update(kw)
@@ -79,7 +82,7 @@ def start_build(args):
     ### production buildbot is not difficult to correct.
     if IS_PRODUCTION and os.path.exists(os.path.join(sourcepath, 'requirements.txt')):
         print("Installing pips")
-        subprocess.run(('/bin/bash', '-c',
+        subprocess.run((BASH, '-c',
                         'source bin/activate; pip3 install -r source/requirements.txt'),
                        cwd=path, check=True)
     else:
@@ -120,7 +123,7 @@ def start_build(args):
         generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], settings_dir)
     else:
         # The default name, but we'll pass it explicitly.
-        settings_path = os.path.join(sourcepath, 'pelicanconf.py')
+        settings_path = os.path.join(sourcepath, PELICAN_CONF)
 
         # Set currently supported plugins
         ### this needs to be removed, as it is too indeterminate.
@@ -135,7 +138,7 @@ except:
     # Call pelican
     buildpath = os.path.join(path, 'build/output')
     os.makedirs(buildpath, exist_ok = True)
-    buildcmd = ('/bin/bash', '-c',
+    buildcmd = (BASH, '-c',
                 'source bin/activate; cd source && '
                 ### note: adding --debug can be handy
                 f'(pelican {content_dir} --settings {settings_path} -o {buildpath})',
@@ -235,8 +238,8 @@ def build_dir(args):
         settings_path = os.path.join(auto_dir, AUTO_SETTINGS)
         builtin_plugins = os.path.join(tool_dir, os.pardir, 'plugins')
         generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ])
-    elif os.path.exists(os.path.join(yaml_dir, 'pelicanconf.py')):
-        settings_path = os.path.join(yaml_dir, 'pelicanconf.py')
+    elif os.path.exists(os.path.join(yaml_dir, PELICAN_CONF)):
+        settings_path = os.path.join(yaml_dir, PELICAN_CONF)
     else:
         print(f'ERROR: {pelconf_yaml} is missing')
         print(f'  see: {AUTO_SETTINGS_HELP}')
@@ -249,7 +252,7 @@ def build_dir(args):
         pel_options = ''
 
     # Call pelican
-    buildcmd = ('/bin/bash', '-c',
+    buildcmd = (BASH, '-c',
                 ### note: adding --debug can be handy
                 f'(pelican {content_dir} --settings {settings_path} --o {args.output} {pel_options})',
                 )

@@ -48,6 +48,8 @@ FIXUP_HTML = [
     (re.compile(r'&gt;'), '>'),
 ]
 
+# Format of svn ls -v output: Jan 1 1970
+SVN_DATE_FORMAT = "%b %d %Y"
 
 # read the asfdata configuration in order to get data load and transformation instructions.
 def read_config(config_yaml, debug):
@@ -401,13 +403,13 @@ def process_distributions(project, src, sort_revision, debug):
             # user = listing[1]
             if listing[-6] == '':
                 # dtm in the past year
-                dtm1 = datetime.datetime.strptime(" ".join(listing[-4:-2]) + " " + str(gatherYear), "%b %d %Y")
+                dtm1 = datetime.datetime.strptime(" ".join(listing[-4:-2]) + " " + str(gatherYear), SVN_DATE_FORMAT)
                 if dtm1 > gatherDate:
-                    dtm1 = datetime.datetime.strptime(" ".join(listing[-4:-2]) + " " + str(gatherYear - 1), "%b %d %Y")
+                    dtm1 = datetime.datetime.strptime(" ".join(listing[-4:-2]) + " " + str(gatherYear - 1), SVN_DATE_FORMAT)
                 fsize = listing[-5]
             else:
                 # dtm older than one year
-                dtm1 = datetime.datetime.strptime(" ".join(listing[-5:-1]), "%b %d %Y")
+                dtm1 = datetime.datetime.strptime(" ".join(listing[-5:-1]), SVN_DATE_FORMAT)
                 fsize = listing[-6]
             # date is close enough
             dtm = dtm1.strftime("%m/%d/%Y")
