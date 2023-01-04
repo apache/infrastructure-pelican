@@ -579,9 +579,9 @@ def process_twitter(handle, count, debug):
         print(f'-----\ntwitter feed: {handle}')
     bearer_token = twitter_auth()
     if not bearer_token:
-        return sequence_list('twitter',{
+        return sequence_list('twitter',[{
             'text': 'To retrieve tweets supply a valid twitter bearer token in ~/.authtokens'
-        })
+        }])
     # do not print or display bearer_token as it is a secret
     query = f'from:{handle}'
     tweet_fields = 'tweet.fields=author_id'
@@ -589,9 +589,9 @@ def process_twitter(handle, count, debug):
     headers = {'Authorization': f'Bearer {bearer_token}'}
     load = connect_to_endpoint(url, headers)
     if 'data' not in load:
-        return sequence_list('twitter',{
+        return sequence_list('twitter',[{
             'text': 'Unable to extract Twitter data'
-        })
+        }])
     reference = sequence_list('twitter', load['data'])
     if load['meta']['result_count'] < count:
         v = reference
