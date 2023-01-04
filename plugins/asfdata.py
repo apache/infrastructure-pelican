@@ -591,6 +591,7 @@ def process_twitter(handle, count, debug):
     load = connect_to_endpoint(url, headers)
     if 'data' not in load:
         print('WARN: "data" not in Twitter response')
+        print(load) # DEBUG
         return sequence_list('twitter',[{
             'text': 'Unable to extract Twitter data'
         }])
