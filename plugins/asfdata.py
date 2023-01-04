@@ -579,6 +579,7 @@ def process_twitter(handle, count, debug):
         print(f'-----\ntwitter feed: {handle}')
     bearer_token = twitter_auth()
     if not bearer_token:
+        print('WARN: no bearer token for Twitter')
         return sequence_list('twitter',[{
             'text': 'To retrieve tweets supply a valid twitter bearer token in ~/.authtokens'
         }])
@@ -589,6 +590,7 @@ def process_twitter(handle, count, debug):
     headers = {'Authorization': f'Bearer {bearer_token}'}
     load = connect_to_endpoint(url, headers)
     if 'data' not in load:
+        print('WARN: "data" not in Twitter response')
         return sequence_list('twitter',[{
             'text': 'Unable to extract Twitter data'
         }])
