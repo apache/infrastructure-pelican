@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
 
+# Trigger a buildbot run
+# Defaults to the scheduler 'pelican_websites'
+
 import argparse
 import re
 
@@ -22,15 +25,15 @@ WSMAP = {
 
 # The schedule/host we need to kick for a rebuild.
 ### maybe parameterize?
-SCHEDULER_NAME = 'pelican_websites'
+SCHEDULER_NAME_DEFAULT = 'pelican_websites'
 API_HOST = 'ci2.apache.org'
 
 
-def main(repo, sourcebranch, outputbranch, theme, notify, min_pages):
+def main(repo, sourcebranch, outputbranch, theme, notify, min_pages, scheduler_name):
 
     # Never build from asf-site.
     assert sourcebranch != 'asf-site'
-    
+
     # Infer project name from the repository name.
     ### this code and WSMAP should be centralized.
     m = re.match(r"(?:incubator-)?([^-.]+)", repo)
@@ -59,7 +62,7 @@ def main(repo, sourcebranch, outputbranch, theme, notify, min_pages):
         },
     }
     print('Triggering pelican build...')
-    s.post(f'https://{API_HOST}/api/v2/forceschedulers/{SCHEDULER_NAME}', json=payload)
+    s.post(f'https://{API_HOST}/api/v2/forceschedulers/{scheduler_name}', json=payload)
 
 
 if __name__ == '__main__':
@@ -77,8 +80,10 @@ if __name__ == '__main__':
                         help='Where to email the build result message.')
     parser.add_argument('--min-pages', type=int, default=0,
                         help='Minimum number of generated pages.')
+    parser.add_argument('--scheduler-name', default=SCHEDULER_NAME_DEFAULT,
+                        help='Name of scheduler to trigger')
 
     args = parser.parse_args()
     print('ARGS:', args)
     main(args.repo, args.sourcebranch, args.outputbranch, args.theme,
-         args.notify, args.min_pages)
+         args.notify, args.min_pages, args.scheduler_name)
