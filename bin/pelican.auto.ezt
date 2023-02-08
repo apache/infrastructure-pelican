@@ -30,7 +30,7 @@ PATH_METADATA = '[pages]/(?P<path_no_ext>.*)\\..*'
 PATH_METADATA = '(?P<path_no_ext>.*)\\..*'
 [end]
 
-PAGE_SAVE_AS = '{path_no_ext}.html'
+PAGE_URL = PAGE_SAVE_AS = '{path_no_ext}.html'
 
 # Don't try to translate
 PAGE_TRANSLATION_ID = None
