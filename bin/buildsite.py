@@ -79,9 +79,9 @@ def start_build(args):
     asfyaml_path = os.path.join(sourcepath, '.asf.yaml')
     if os.path.isfile(asfyaml_path):
         asfyaml = yaml.safe_load(open(asfyaml_path))
-        pelican_asfyml = asfyaml.get("pelican", {})
-        if pelican_asfyml and minimum_page_count <= 0:
-            minimum_page_count = pelican_asfyml.get("minimum_page_count", minimum_page_count)
+        pelican_asfyaml_section = asfyaml.get("pelican", {})
+        if pelican_asfyaml_section and minimum_page_count <= 0:
+            minimum_page_count = pelican_asfyaml_section.get("minimum_page_count", minimum_page_count)
             
 
     # Activate venv and install pips if needed. For dev/test, we will
