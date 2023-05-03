@@ -73,6 +73,16 @@ def start_build(args):
     print("Cloning from git repository %s (branch: %s)" % (args.source, args.sourcebranch))
     subprocess.run((GIT, 'clone', '--branch', args.sourcebranch, '--depth=1', '--no-single-branch', args.source, sourcepath),
                    check=True)
+    
+    # Check for minimum page count setting in .asf.yaml, which overrides if cli arg is 0 - INFRA-24226.
+    minimum_page_count = args.count
+    asfyaml_path = os.path.join(sourcepath, '.asf.yaml')
+    if os.path.isfile(asfyaml_path):
+        asfyaml = yaml.safe_load(open(asfyaml_path))
+        pelican_asfyml = asfyaml.get("pelican", {})
+        if pelican_asfyml and minimum_page_count <= 0:
+            minimum_page_count = pelican_asfyml.get("minimum_page_count", minimum_page_count)
+            
 
     # Activate venv and install pips if needed. For dev/test, we will
     # assume that all requirements are available at the system level,
@@ -150,8 +160,8 @@ except:
 
     count = len(glob.glob(f'{buildpath}/**/*.html', recursive=True))
     print(f"{count} html files.")
-    if args.count > 0 and args.count > count:
-        print("Not enough html pages in the Web Site. Minimum %s > %s found in the Web Site." % (args.count, count))
+    if minimum_page_count > 0 and minimum_page_count > count:
+        print("Not enough html pages in the Web Site. Minimum %s > %s found in the Web Site." % (minimum_page_count, count))
         sys.exit(4)
 
     # Done for now
