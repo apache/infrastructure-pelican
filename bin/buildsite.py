@@ -63,7 +63,7 @@ def start_build(args):
     """ The actual build steps """
 
     path = os.path.join(SCRATCH_DIR, args.project)
-    
+
     # Set up virtual environment
     print("Setting up virtual python environment in %s" % path)
     venv.create(path, clear=True, symlinks=True, with_pip=False)
@@ -73,7 +73,7 @@ def start_build(args):
     print("Cloning from git repository %s (branch: %s)" % (args.source, args.sourcebranch))
     subprocess.run((GIT, 'clone', '--branch', args.sourcebranch, '--depth=1', '--no-single-branch', args.source, sourcepath),
                    check=True)
-    
+
     # Check for minimum page count setting in .asf.yaml, which overrides if cli arg is 0 - INFRA-24226.
     minimum_page_count = args.count
     asfyaml_path = os.path.join(sourcepath, '.asf.yaml')
@@ -82,7 +82,7 @@ def start_build(args):
         pelican_asfyaml_section = asfyaml.get("pelican", {})
         if pelican_asfyaml_section and minimum_page_count <= 0:
             minimum_page_count = pelican_asfyaml_section.get("minimum_page_count", minimum_page_count)
-            
+
 
     # Activate venv and install pips if needed. For dev/test, we will
     # assume that all requirements are available at the system level,
@@ -292,7 +292,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
 
     tdata['p_paths'] = builtin_p_paths
     tdata['use'] = ['gfm']
-    
+
     tdata['uses_sitemap'] = None
     if 'plugins' in ydata:
         if 'paths' in ydata['plugins']:
@@ -301,7 +301,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
 
         if 'use' in ydata['plugins']:
             tdata['use'] = ydata['plugins']['use']
-        
+
         if 'sitemap' in ydata['plugins']:
             sm = ydata['plugins']['sitemap']
             sitemap_params =_helper(
@@ -351,7 +351,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
     tdata['uses_copy'] = None
     if 'setup' in ydata:
         sdata = ydata['setup']
-        
+
         # Load data structures into the pelican METADATA.
         if 'data' in sdata:
             tdata['uses_data'] = 'yes'  # ezt.boolean()
@@ -411,7 +411,7 @@ def locked_build(args):
         print("ERROR: Could not acquire lock for project directory - is another build taking ages to complete?!")
         sys.exit(-1)
 
-    
+
 def main():
     #os.chdir('/tmp/nowhere')  ### DEBUG: make sure we aren't reliant on cwd
 
