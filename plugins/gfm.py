@@ -28,7 +28,7 @@ import re
 import pelican.utils
 import pelican.plugins.signals
 import pelican.readers
-import pycmarkgfm
+import pycmarkgfm.options
 
 
 class GFMReader(pelican.readers.BaseReader):
@@ -122,7 +122,9 @@ class GFMReader(pelican.readers.BaseReader):
 
     def render(self, text):
         "Use cmark-gfm to render the Markdown into an HTML fragment."
-        return pycmarkgfm.gfm_to_html(text.decode("utf-8")).encode("utf-8")
+        return pycmarkgfm.gfm_to_html(text.decode("utf-8"),
+                                      options=pycmarkgfm.options.unsafe,
+                                      ).encode("utf-8")
 
 
 
