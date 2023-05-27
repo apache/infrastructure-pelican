@@ -30,7 +30,7 @@ if [ "$2" != "" ]; then TARDIR="$2"; fi
 # this is checked at the start of the build
 OUTPUTDIR=${3:-.}
 
-ARCHIVES="https://github.com/github/cmark/archive"
+ARCHIVES="https://github.com/github/cmark-gfm/archive/refs/tags"
 LOCAL="${TARDIR}/cmark-gfm.$VERSION.orig.tar.gz"
 
 # Follow redirects, and place the result into known name $LOCAL

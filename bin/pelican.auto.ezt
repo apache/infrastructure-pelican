@@ -20,13 +20,15 @@ PLUGIN_PATHS = [ [for p_paths]'[p_paths]', [end] ]
 PLUGINS = [ [for use]'[use]', [end] ]
 
 # All content is located at '.' (aka content/ )
-PAGE_PATHS = [ '.' ]
-STATIC_PATHS = [ '.' ]
+PAGE_PATHS = [ '[if-any pages][pages][else].[end]' ]
+STATIC_PATHS = [ [for static]'[static]', [end] ]
 
 # Where to place/link generated pages
+[if-any pages]
+PATH_METADATA = '[pages]/(?P<path_no_ext>.*)\\..*'
+[else]
 PATH_METADATA = '(?P<path_no_ext>.*)\\..*'
-### some sites have the pages in a subdir. TBD.
-#PATH_METADATA = 'pages/(?P<path_no_ext>.*)\\..*'
+[end]
 
 PAGE_SAVE_AS = '{path_no_ext}.html'
 
@@ -42,7 +44,11 @@ AUTHORS_SAVE_AS = ''
 ARCHIVES_SAVE_AS = ''
 
 # Disable articles by pointing to a (should-be-absent) subdir
-ARTICLE_PATHS = [ 'articles' ]
+ARTICLE_PATHS = [ 'blog' ]
+
+# needed to create blogs page
+ARTICLE_URL = 'blog/{slug}.html'
+ARTICLE_SAVE_AS = 'blog/{slug}.html'
 
 # Disable all processing of .html files
 READERS = { 'html': None, }
@@ -70,6 +76,24 @@ ASF_GENID = {
     'debug': [debug],
 }
 [end]
+
+[if-any uses_sitemap]
+SITEMAP = {
+    "exclude": [sitemap.exclude],
+    "format": "[sitemap.format]",
+    "priorities": {
+        "articles": [sitemap.priorities.articles],
+        "indexes": [sitemap.priorities.indexes],
+        "pages": [sitemap.priorities.pages]
+    },
+    "changefreqs": {
+        "articles": "[sitemap.changefreqs.articles]",
+        "indexes": "[sitemap.changefreqs.indexes]",
+        "pages": "[sitemap.changefreqs.pages]"
+    }
+}
+[end]
+
 [if-any uses_data]
 # Configure the asfdata plugin
 ASF_DATA = {
@@ -90,4 +114,10 @@ IGNORE_FILES = [ [for ignore]'[ignore]', [end] ]
 [end]
 [if-any uses_copy]
 ASF_COPY = [ [for copy]'[copy]', [end] ]
+[end]
+[if-any uses_index]
+# Configure the asfindex plugin
+ASF_INDEX = {
+    'index': '[index]',
+}
 [end]

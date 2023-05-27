@@ -1,4 +1,12 @@
 #!/usr/bin/env python3
+#
+# To run this in dev/test, then LIBCMARKDIR must be defined in the
+# environment.
+#
+# $ export LIBCMARKDIR=/path/to/cmark-gfm.0.28.3.gfm.12/lib
+#
+# ### see build-cmark.sh for building the lib
+#
 
 import sys
 
@@ -25,16 +33,15 @@ import ezt
 # Command definitions - put into a conf later on?
 GIT             = '/usr/bin/git'
 SVN             = '/usr/bin/svn'
+BASH            = '/bin/bash'
 PELICANFILES    = '/home/buildslave/slave/tools'
 SCRATCH_DIR     = '/tmp'
 PLUGINS         = '/opt/infrastructure-pelican/plugins'
-
 VERSION         = '0.28.3.gfm.12'
 LIBCMARKDIR     = f'/usr/local/asfpackages/cmark-gfm/cmark-gfm-{VERSION}/lib'
 if not os.path.exists(LIBCMARKDIR):
     # Fail, if a path to the CMARK library is not in ENVIRON.
     LIBCMARKDIR = os.environ['LIBCMARKDIR']
-
 THIS_DIR        = os.path.abspath(os.path.dirname(__file__))
 
 IS_PRODUCTION   = os.path.exists(PELICANFILES)
@@ -43,14 +50,20 @@ IS_PRODUCTION   = os.path.exists(PELICANFILES)
 AUTO_SETTINGS_YAML = 'pelicanconf.yaml'
 AUTO_SETTINGS_TEMPLATE = 'pelican.auto.ezt'
 AUTO_SETTINGS = 'pelican.auto.py'
-AUTO_SETTINGS_HELP = 'pelicanconf.md'
+AUTO_SETTINGS_HELP = 'https://github.com/apache/infrastructure-pelican/blob/master/pelicanconf.md'
+
+# default config file name
+PELICAN_CONF = 'pelicanconf.py'
+class _helper:
+    def __init__(self, **kw):
+        vars(self).update(kw)
 
 
 def start_build(args):
     """ The actual build steps """
 
     path = os.path.join(SCRATCH_DIR, args.project)
-    
+
     # Set up virtual environment
     print("Setting up virtual python environment in %s" % path)
     venv.create(path, clear=True, symlinks=True, with_pip=False)
@@ -61,6 +74,16 @@ def start_build(args):
     subprocess.run((GIT, 'clone', '--branch', args.sourcebranch, '--depth=1', '--no-single-branch', args.source, sourcepath),
                    check=True)
 
+    # Check for minimum page count setting in .asf.yaml, which overrides if cli arg is 0 - INFRA-24226.
+    minimum_page_count = args.count
+    asfyaml_path = os.path.join(sourcepath, '.asf.yaml')
+    if os.path.isfile(asfyaml_path):
+        asfyaml = yaml.safe_load(open(asfyaml_path))
+        pelican_asfyaml_section = asfyaml.get("pelican", {})
+        if pelican_asfyaml_section and minimum_page_count <= 0:
+            minimum_page_count = pelican_asfyaml_section.get("minimum_page_count", minimum_page_count)
+
+
     # Activate venv and install pips if needed. For dev/test, we will
     # assume that all requirements are available at the system level,
     # rather than needing to install them into the venv.
@@ -69,7 +92,7 @@ def start_build(args):
     ### production buildbot is not difficult to correct.
     if IS_PRODUCTION and os.path.exists(os.path.join(sourcepath, 'requirements.txt')):
         print("Installing pips")
-        subprocess.run(('/bin/bash', '-c',
+        subprocess.run((BASH, '-c',
                         'source bin/activate; pip3 install -r source/requirements.txt'),
                        cwd=path, check=True)
     else:
@@ -82,6 +105,24 @@ def start_build(args):
         tool_dir = THIS_DIR
     print("TOOLS:", tool_dir)
 
+    ### content_dir isn't quite right either. generate_settings() needs a
+    ### better definition of its sourcepath. And we need a proper definition
+    ### of content_dir to pass to PELICAN.
+    ### gonna brute force for now, to validate some thinking, then refine.
+
+    ### content_dir is where the PAGES are located
+    ### settings_dir is the root of themes and plugins
+
+    # Where is the content located?
+    ### for now, just look for some possibilities. This should come from
+    ### the .yaml or something.
+    content_dir = os.path.join(sourcepath, 'content')
+    settings_dir = sourcepath
+    if not os.path.exists(content_dir):
+        content_dir = os.path.join(sourcepath, 'site')
+        assert os.path.exists(content_dir)
+        settings_dir = content_dir
+
     pelconf_yaml = os.path.join(sourcepath, AUTO_SETTINGS_YAML)
     if os.path.exists(pelconf_yaml):
         settings_path = os.path.join(path, AUTO_SETTINGS)
@@ -89,10 +130,10 @@ def start_build(args):
             builtin_plugins = PLUGINS
         else:
             builtin_plugins = os.path.join(tool_dir, os.pardir, 'plugins')
-        generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], sourcepath)
+        generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], settings_dir)
     else:
         # The default name, but we'll pass it explicitly.
-        settings_path = os.path.join(sourcepath, 'pelicanconf.py')
+        settings_path = os.path.join(sourcepath, PELICAN_CONF)
 
         # Set currently supported plugins
         ### this needs to be removed, as it is too indeterminate.
@@ -107,10 +148,10 @@ except:
     # Call pelican
     buildpath = os.path.join(path, 'build/output')
     os.makedirs(buildpath, exist_ok = True)
-    buildcmd = ('/bin/bash', '-c',
+    buildcmd = (BASH, '-c',
                 'source bin/activate; cd source && '
                 ### note: adding --debug can be handy
-                f'(pelican content --settings {settings_path} -o {buildpath})',
+                f'(pelican {content_dir} --settings {settings_path} -o {buildpath})',
                 )
     print("Building web site with:", buildcmd)
     env = os.environ.copy()
@@ -119,8 +160,8 @@ except:
 
     count = len(glob.glob(f'{buildpath}/**/*.html', recursive=True))
     print(f"{count} html files.")
-    if args.count > 0 and args.count > count:
-        print("Not enough html pages in the Web Site. Minimum %s > %s found in the Web Site." % (args.count, count))
+    if minimum_page_count > 0 and minimum_page_count > count:
+        print("Not enough html pages in the Web Site. Minimum %s > %s found in the Web Site." % (minimum_page_count, count))
         sys.exit(4)
 
     # Done for now
@@ -189,25 +230,31 @@ except:
 
 def build_dir(args):
 
-    path = sourcepath = '.'
+    # Where to place the automatically-generated AUTO_SETTINGS file (pelican.auto.py)
+    auto_dir = '.'
+
+    # Where is the YAML file?
+    yaml_dir = args.yaml_dir
+
+    # Where is the content located?
+    content_dir = args.content_dir
 
     # Where are our tools?
     tool_dir = THIS_DIR
     print("TOOLS:", tool_dir)
 
-    pelconf_yaml = os.path.join(sourcepath, AUTO_SETTINGS_YAML)
+    pelconf_yaml = os.path.join(yaml_dir, AUTO_SETTINGS_YAML)
     if os.path.exists(pelconf_yaml):
-        settings_path = os.path.join(path, AUTO_SETTINGS)
+        settings_path = os.path.join(auto_dir, AUTO_SETTINGS)
         builtin_plugins = os.path.join(tool_dir, os.pardir, 'plugins')
-        generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ], sourcepath)
+        generate_settings(pelconf_yaml, settings_path, [ builtin_plugins ])
+    elif os.path.exists(os.path.join(yaml_dir, PELICAN_CONF)):
+        settings_path = os.path.join(yaml_dir, PELICAN_CONF)
     else:
-        # The default name, but we'll pass it explicitly.
-        settings_path = os.path.join(sourcepath, 'pelicanconf.py')
-        print(f'You must convert {settings_path} to {pelconf_yaml}')
-        help_path = os.path.join(tool_dir, os.pardir, AUTO_SETTINGS_HELP)
-        with open(help_path, encoding='utf-8') as f:
-            print(f.read())
+        print(f'ERROR: {pelconf_yaml} is missing')
+        print(f'  see: {AUTO_SETTINGS_HELP}')
         sys.exit(4)
+
 
     if args.listen:
         pel_options = '-r -l -b 0.0.0.0'
@@ -215,15 +262,16 @@ def build_dir(args):
         pel_options = ''
 
     # Call pelican
-    buildcmd = ('/bin/bash', '-c',
+    buildcmd = (BASH, '-c',
                 ### note: adding --debug can be handy
-                f'(pelican content --settings {settings_path} --o {args.output} {pel_options})',
+                f'(pelican {content_dir} --settings {settings_path} --o {args.output} {pel_options})',
                 )
     print("Building web site with:", buildcmd)
     env = os.environ.copy()
     env['LIBCMARKDIR'] = LIBCMARKDIR
     try:
-        subprocess.run(buildcmd, cwd=path, check=True, env=env)
+        ### is the cwd_necessary?
+        subprocess.run(buildcmd, cwd=auto_dir, check=True, env=env)
     except KeyboardInterrupt:
         pass
 
@@ -237,30 +285,58 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
         'theme': os.path.join(sourcepath, ydata.get('theme', 'theme/apache')),
         'debug': str(ydata.get('debug', False)),
         })
+
+    content = ydata.get('content', { })
+    tdata['pages'] = content.get('pages')
+    tdata['static'] = content.get('static_dirs', [ '.', ])
+
     tdata['p_paths'] = builtin_p_paths
     tdata['use'] = ['gfm']
+
+    tdata['uses_sitemap'] = None
     if 'plugins' in ydata:
         if 'paths' in ydata['plugins']:
             for p in ydata['plugins']['paths']:
                 tdata['p_paths'].append(os.path.join(sourcepath, p))
+
         if 'use' in ydata['plugins']:
             tdata['use'] = ydata['plugins']['use']
 
-    if 'genid' in ydata:
-        class GenIdParams:
-            def setbool(self, name):
-                setattr(self, name, str(ydata['genid'].get(name, False)))
-            def setdepth(self, name):
-                setattr(self, name, ydata['genid'].get(name))
+        if 'sitemap' in ydata['plugins']:
+            sm = ydata['plugins']['sitemap']
+            sitemap_params =_helper(
+                    exclude=str(sm['exclude']),
+                    format=sm['format'],
+                    priorities=_helper(
+                        articles=sm['priorities']['articles'],
+                        indexes=sm['priorities']['indexes'],
+                        pages=sm['priorities']['pages'],
+                        ),
+                    changefreqs=_helper(
+                        articles=sm['changefreqs']['articles'],
+                        indexes=sm['changefreqs']['indexes'],
+                        pages=sm['changefreqs']['pages'],
+                        ),
+                    )
 
-        genid = GenIdParams()
-        genid.setbool('unsafe')
-        genid.setbool('metadata')
-        genid.setbool('elements')
-        genid.setbool('permalinks')
-        genid.setbool('tables')
-        genid.setdepth('headings_depth')
-        genid.setdepth('toc_depth')
+            tdata['uses_sitemap'] = 'yes'  # ezt.boolean
+            tdata['sitemap'] = sitemap_params
+            tdata['use'].append('sitemap')  # add the plugin
+
+    tdata['uses_index'] = None
+    if 'index' in tdata:
+        tdata['uses_index'] = 'yes'  # ezt.boolean
+
+    if 'genid' in ydata:
+        genid = _helper(
+                unsafe=str(ydata['genid'].get('unsafe', False)),
+                metadata=str(ydata['genid'].get('metadata', False)),
+                elements=str(ydata['genid'].get('elements', False)),
+                permalinks=str(ydata['genid'].get('permalinks', False)),
+                tables=str(ydata['genid'].get('tables', False)),
+                headings_depth=ydata['genid'].get('headings_depth'),
+                toc_depth=ydata['genid'].get('toc_depth'),
+                )
 
         tdata['uses_genid'] = 'yes'  # ezt.boolean()
         tdata['genid'] = genid
@@ -275,7 +351,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
     tdata['uses_copy'] = None
     if 'setup' in ydata:
         sdata = ydata['setup']
-        
+
         # Load data structures into the pelican METADATA.
         if 'data' in sdata:
             tdata['uses_data'] = 'yes'  # ezt.boolean()
@@ -335,7 +411,7 @@ def locked_build(args):
         print("ERROR: Could not acquire lock for project directory - is another build taking ages to complete?!")
         sys.exit(-1)
 
-    
+
 def main():
     #os.chdir('/tmp/nowhere')  ### DEBUG: make sure we aren't reliant on cwd
 
@@ -358,6 +434,8 @@ def main():
     parser_dir = subparsers.add_parser("dir", help = "Build source in current directory and optionally serve the result")
     parser_dir.add_argument("--output", help = "Pelican output path (default: %(default)s)", default = "site-generated")
     parser_dir.add_argument("--listen", help = "Pelican build in server mode (default: %(default)s)", action = "store_true")
+    parser_dir.add_argument('--yaml-dir', help='Where pelicanconf.yaml is located (default: %(default)s)', default='.')
+    parser_dir.add_argument('--content-dir', help='Where is the content located (default: %{default)s)', default='content')
     parser_dir.set_defaults(func=build_dir)
 
     args = parser.parse_args()

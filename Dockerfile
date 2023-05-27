@@ -47,13 +47,9 @@ RUN apt install curl cmake build-essential -y
 # Copy the current ASF code
 WORKDIR /tmp/pelican-asf
 # copy only the GFM build code initially, to reduce rebuilds
-COPY bin bin
+COPY bin/build-cmark.sh bin/build-cmark.sh
 # build gfm
 RUN ./bin/build-cmark.sh | grep LIBCMARKDIR > LIBCMARKDIR.sh
-# we also need the plugins
-COPY plugins plugins
-# we may need to explain how to create a pelicanconf.yaml
-COPY pelicanconf.md pelicanconf.md
 
 # Standard Pelican stuff
 # rebase the image to save up to 230MB of image size
@@ -68,22 +64,28 @@ RUN apt install subversion -y
 # we likely do not need the following
 # RUN apt install wget unzip fontconfig -y
 
-ARG PELICAN_VERSION=4.6.0
-ARG MATPLOTLIB_VERSION=3.4.1
+ARG PELICAN_VERSION=4.7.0
 RUN pip install pelican==${PELICAN_VERSION}
-RUN pip install matplotlib==${MATPLOTLIB_VERSION}
 
 # Copy the built cmark and ASF 
 WORKDIR /tmp/pelican-asf
 COPY --from=pelican-asf /tmp/pelican-asf .
 
 COPY requirements.txt .
+# Don't automatically load dependencies; please add them to requirements.txt instead
 RUN pip install -r requirements.txt --no-deps
+
+# Now add the local code; do this last to avoid unnecessary rebuilds
+COPY bin bin
+COPY plugins plugins
 
 # If the site needs authtokens to build, copy them into the file .authtokens
 # and it will be picked up at build time
 # N.B. make sure the .authtokens file is not committed to the repo!
 RUN ln -s /site/.authtokens /root/.authtokens
+
+# buildsite.py expects python to be here:
+RUN ln -s /usr/local/bin/python3 /usr/bin/python3
 
 # Run Pelican
 WORKDIR /site

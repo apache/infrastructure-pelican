@@ -36,6 +36,7 @@ import yaml
 import ezt
 
 import xml.dom.minidom
+import xml.parsers.expat
 
 import pelican.plugins.signals
 import pelican.utils
@@ -47,6 +48,8 @@ FIXUP_HTML = [
     (re.compile(r'&gt;'), '>'),
 ]
 
+# Format of svn ls -v output: Jan 1 1970
+SVN_DATE_FORMAT = "%b %d %Y"
 
 # read the asfdata configuration in order to get data load and transformation instructions.
 def read_config(config_yaml, debug):
@@ -321,6 +324,10 @@ def process_sequence(metadata, seq, sequence, load, debug):
         else:
             print(f'{seq} - split requires an existing sequence to split')
 
+    if 'truncate' in sequence:
+        multiple = int(sequence["truncate"])
+        reference = int(reference / multiple) * multiple
+
     # if this not already a sequence or dictionary then convert to a sequence
     if not is_sequence and not is_dictionary:
         # convert the dictionary/list to a sequence of objects
@@ -330,12 +337,14 @@ def process_sequence(metadata, seq, sequence, load, debug):
             reference = sequence_dict(seq, reference)
         elif isinstance(reference, list):
             reference = sequence_list(seq, reference)
-        else:
-            print(f'{seq}: cannot proceed invalid type, must be dict or list')
 
     # save sequence in metadata
     if save_metadata:
         metadata[seq] = reference
+        try:
+          metadata[f'{seq}_size'] = len(reference)
+        except TypeError: # allow for integer
+          pass
 
 
 # create metadata sequences and dictionaries from a data load
@@ -394,13 +403,13 @@ def process_distributions(project, src, sort_revision, debug):
             # user = listing[1]
             if listing[-6] == '':
                 # dtm in the past year
-                dtm1 = datetime.datetime.strptime(" ".join(listing[-4:-2]) + " " + str(gatherYear), "%b %d %Y")
+                dtm1 = datetime.datetime.strptime(" ".join(listing[-4:-2]) + " " + str(gatherYear), SVN_DATE_FORMAT)
                 if dtm1 > gatherDate:
-                    dtm1 = datetime.datetime.strptime(" ".join(listing[-4:-2]) + " " + str(gatherYear - 1), "%b %d %Y")
+                    dtm1 = datetime.datetime.strptime(" ".join(listing[-4:-2]) + " " + str(gatherYear - 1), SVN_DATE_FORMAT)
                 fsize = listing[-5]
             else:
                 # dtm older than one year
-                dtm1 = datetime.datetime.strptime(" ".join(listing[-5:-1]), "%b %d %Y")
+                dtm1 = datetime.datetime.strptime(" ".join(listing[-5:-1]), SVN_DATE_FORMAT)
                 fsize = listing[-6]
             # date is close enough
             dtm = dtm1.strftime("%m/%d/%Y")
@@ -481,7 +490,7 @@ def get_node_text(nodelist):
     """http://www.python.org/doc/2.5.2/lib/minidom-example.txt"""
     rc = ''
     for node in nodelist:
-        if node.nodeType == node.TEXT_NODE:
+        if node.nodeType in [node.CDATA_SECTION_NODE, node.TEXT_NODE]:
             rc = rc + node.data
     return rc
 
@@ -509,11 +518,15 @@ def process_blog(feed, count, words, debug):
     if debug:
         print(f'blog feed: {feed}')
     content = requests.get(feed).text
-    dom = xml.dom.minidom.parseString(content)
-    # dive into the dom to get 'entry' elements
-    entries = dom.getElementsByTagName('entry')
-    # we only want count many from the beginning
-    entries = entries[:count]
+    # See INFRA-23636: cannot check the page status, so just catch parsing errors
+    try:
+        dom = xml.dom.minidom.parseString(content)
+        # dive into the dom to get 'entry' elements
+        entries = dom.getElementsByTagName('entry')
+        # we only want count many from the beginning
+        entries = entries[:count]
+    except xml.parsers.expat.ExpatError:
+        entries = []
     v = [ ]
     for entry in entries:
         if debug:
@@ -568,17 +581,28 @@ def process_twitter(handle, count, debug):
         print(f'-----\ntwitter feed: {handle}')
     bearer_token = twitter_auth()
     if not bearer_token:
-        return sequence_list('twitter',{
+        print('WARN: no bearer token for Twitter')
+        return sequence_list('twitter',[{
             'text': 'To retrieve tweets supply a valid twitter bearer token in ~/.authtokens'
-        })
+        }])
     # do not print or display bearer_token as it is a secret
     query = f'from:{handle}'
     tweet_fields = 'tweet.fields=author_id'
     url = f'https://api.twitter.com/2/tweets/search/recent?query={query}&{tweet_fields}'
     headers = {'Authorization': f'Bearer {bearer_token}'}
     load = connect_to_endpoint(url, headers)
+    result_count = load['meta']['result_count']
+    if result_count == 0:
+        print(f'WARN: No recent tweets for {handle}')
+        return sequence_list('twitter',[{ 'text': 'No recent tweets found' }])
+    if 'data' not in load:
+        print('WARN: "data" not in Twitter response')
+        print(load) # DEBUG; should not happen if result_count > 0
+        return sequence_list('twitter',[{
+            'text': 'Unable to extract Twitter data'
+        }])
     reference = sequence_list('twitter', load['data'])
-    if load['meta']['result_count'] < count:
+    if result_count < count:
         v = reference
     else:
         v = reference[:count]
@@ -589,7 +613,10 @@ def process_twitter(handle, count, debug):
 def process_eccn(fname, debug):
     if debug:
         print('-----\nECCN:', fname)
-    j = yaml.safe_load(open(fname))
+    if fname.startswith("https://"):
+        j = yaml.safe_load(requests.get(fname).text)
+    else:
+        j = yaml.safe_load(open(fname))
 
     # versions have zero or more controlled sources
     def make_sources(sources):
