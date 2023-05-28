@@ -133,7 +133,7 @@ def generate_toc(content):
             settoc = True
             node, new_header = node.add(header, all_ids)
             header.replaceWith(new_header)  # to get our ids back into soup
-    
+
         if settoc:
             print("Generating ToC for %s" % content.slug)
             tree_string = '{}'.format(tree)
@@ -142,7 +142,7 @@ def generate_toc(content):
             itoc = soup.find('p', text = '[TOC]')
             if itoc:
                 itoc.replaceWith(tree_soup)
-            
+
         content._content = soup.decode(formatter='html')
 
 

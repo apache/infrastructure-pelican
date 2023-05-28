@@ -292,7 +292,7 @@ def make_breadcrumbs(rel_source_path, title):
         crumbs.append(f'<a href="{url}">{p}</a>&nbsp;&raquo&nbsp;')
     crumbs.append(f'<a href="#">{title}</a>')
     return ''.join(crumbs)
-    
+
 
 # add the asfdata metadata into GFM content.
 def add_data(content):

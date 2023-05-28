@@ -67,7 +67,7 @@ RUN apt install subversion -y
 ARG PELICAN_VERSION=4.7.0
 RUN pip install pelican==${PELICAN_VERSION}
 
-# Copy the built cmark and ASF 
+# Copy the built cmark and ASF
 WORKDIR /tmp/pelican-asf
 COPY --from=pelican-asf /tmp/pelican-asf .
 

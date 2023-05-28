@@ -4,7 +4,7 @@
 # and deploy it at http://localhost:8000
 #
 # requires pip3/python3, cmake, and a C compiler
-# known to work on linux/osx. probably works under WSL. 
+# known to work on linux/osx. probably works under WSL.
 # will not work under basic Windows.
 
 # github prefix for cloning/updating repos
@@ -48,13 +48,13 @@ then
   echo "pipenv not found! installing it for you..."
   pip3 install pipenv > /dev/null 2>&1
   if [ $? -eq 1 ];
-  then 
-    echo "pipenv installation failed!" 
+  then
+    echo "pipenv installation failed!"
     exit -1
   fi
 fi
 
-# create our build dir to hold our repos and cmark-gfm 
+# create our build dir to hold our repos and cmark-gfm
 if [ ! -d $SB ];
 then
   mkdir $SB || 'echo "Creation of $SB failed!" && exit -1'
@@ -70,11 +70,11 @@ echo "Cloning repos..."
 if [ -d $IP ];
 then
   echo "$IP exists - updating..."
-  cd $IP && git pull > /dev/null && cd .. 
+  cd $IP && git pull > /dev/null && cd ..
 else
   echo "Cloning $IP"
   # Sometimes useful to add -b <branch> for buildsite testing
-  git clone $GH/$IP 2>&1 
+  git clone $GH/$IP 2>&1
 fi
 
 IP="$SB/$IP"
