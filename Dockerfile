@@ -90,4 +90,7 @@ RUN ln -s /usr/local/bin/python3 /usr/bin/python3
 # Run Pelican
 WORKDIR /site
 
+# Add settings for interactive use
+RUN { cat /tmp/pelican-asf/LIBCMARKDIR.sh; echo "alias buildsite='/tmp/pelican-asf/bin/buildsite.py dir --listen'"; } >>/root/.bashrc
+
 ENTRYPOINT [ "/bin/bash", "-c", "source /tmp/pelican-asf/LIBCMARKDIR.sh && /tmp/pelican-asf/bin/buildsite.py dir --listen" ]
