@@ -54,7 +54,8 @@ RUN ./bin/build-cmark.sh | grep LIBCMARKDIR > LIBCMARKDIR.sh
 # Standard Pelican stuff
 # rebase the image to save up to 230MB of image size
 # image does not need curl, cmake and build-essential
-FROM python:3.9.5-slim-buster
+# Use the Python version as installed on CI pelican builders (2023-06-02)
+FROM python:3.8.10-slim-buster
 
 RUN apt update && apt upgrade -y
 # git is used by `buildsite.py git`
@@ -64,7 +65,8 @@ RUN apt install subversion -y
 # we likely do not need the following
 # RUN apt install wget unzip fontconfig -y
 
-ARG PELICAN_VERSION=4.7.0
+# Use the Pelican version as installed on CI pelican builders (2023-06-02)
+ARG PELICAN_VERSION=4.5.4
 RUN pip install pelican==${PELICAN_VERSION}
 
 # Copy the built cmark and ASF
@@ -74,6 +76,8 @@ COPY --from=pelican-asf /tmp/pelican-asf .
 COPY requirements.txt .
 # Don't automatically load dependencies; please add them to requirements.txt instead
 RUN pip install -r requirements.txt --no-deps
+# Could perhaps be added to requirements.txt but that would affect other uses
+RUN pip install 'MarkupSafe<2.1.0' # needed for Pelican 4.5.4
 
 # Now add the local code; do this last to avoid unnecessary rebuilds
 COPY bin bin
