@@ -17,7 +17,7 @@
 # under the License.
 #
 #
-# asfshell.py - Pelican plugin that runs shell scripts during initialization
+# asfrun.py - Pelican plugin that runs shell scripts during initialization
 #
 
 import sys
