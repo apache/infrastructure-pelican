@@ -517,15 +517,17 @@ def truncate_words(text, words):
 def process_blog(feed, count, words, debug):
     if debug:
         print(f'blog feed: {feed}')
-    content = requests.get(feed).text
     # See INFRA-23636: cannot check the page status, so just catch parsing errors
     try:
+        content = requests.get(feed).text
         dom = xml.dom.minidom.parseString(content)
         # dive into the dom to get 'entry' elements
         entries = dom.getElementsByTagName('entry')
         # we only want count many from the beginning
         entries = entries[:count]
     except xml.parsers.expat.ExpatError:
+        entries = []
+    except requests.exceptions.ConnectionError as e:
         entries = []
     v = [ ]
     for entry in entries:
