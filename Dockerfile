@@ -38,8 +38,12 @@
 #    cd /tmp/<project>/source
 #    pelican -b '0.0.0.0' -l
 #
+
+# Use the Python version as installed on CI pelican builders (2023-06-02)
+ARG PYTHON_VERSION=3.8.10
+
 # Build basic Pelican image
-FROM python:3.9.5-slim-buster as pelican-asf
+FROM python:${PYTHON_VERSION}-slim-buster as pelican-asf
 
 RUN apt update && apt upgrade -y
 RUN apt install curl cmake build-essential -y
@@ -55,7 +59,8 @@ RUN ./bin/build-cmark.sh | grep LIBCMARKDIR > LIBCMARKDIR.sh
 # rebase the image to save up to 230MB of image size
 # image does not need curl, cmake and build-essential
 # Use the Python version as installed on CI pelican builders (2023-06-02)
-FROM python:3.8.10-slim-buster
+FROM python:${PYTHON_VERSION}-slim-buster
+
 
 RUN apt update && apt upgrade -y
 # git is used by `buildsite.py git`
