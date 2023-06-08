@@ -61,7 +61,7 @@ At a high level consider the following sequence of events:
 
    ```yaml
    setup:
-     run:  
+     run:
        - /bin/bash shell.sh
    ```
 
