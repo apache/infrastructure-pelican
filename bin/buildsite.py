@@ -347,6 +347,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
 
     tdata['uses_data'] = None
     tdata['uses_run'] = None
+    tdata['uses_postrun'] = None
     tdata['uses_ignore'] = None
     tdata['uses_copy'] = None
     if 'setup' in ydata:
