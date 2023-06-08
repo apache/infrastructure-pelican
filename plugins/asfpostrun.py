@@ -20,6 +20,7 @@
 # asfpostrun.py - Pelican plugin that runs shell scripts during finalization
 #
 
+import os
 import sys
 import subprocess
 import shlex
@@ -30,20 +31,24 @@ import pelican.settings
 
 
 # open a subprocess
-def os_run(args):
-    return subprocess.Popen(args, stdout=subprocess.PIPE, universal_newlines=True)
-
+def os_run(args, env=None):
+    return subprocess.Popen(args, env=env, stdout=subprocess.PIPE, universal_newlines=True)
 
 # run shell
 def postrun_script(pel_ob):
     asf_postrun = pel_ob.settings.get('ASF_POSTRUN')
     if asf_postrun:
         print('-----\nasfpostrun')
+        # copy the pelican environment into the OS env
+        my_env = os.environ.copy()
+        for k,v in sorted(pel_ob.settings.items()):
+            if k != 'ASF_DATA': # rather large; not needed
+                my_env['PELICAN_'+k] = str(v)
         for command in asf_postrun:
             print(f'-----\n{command}')
             args = shlex.split(command)
             print(args)
-            with os_run(args) as s:
+            with os_run(args, my_env) as s:
                 for line in s.stdout:
                     line = line.strip()
                     print(f'{line}')
