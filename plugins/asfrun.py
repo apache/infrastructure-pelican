@@ -38,7 +38,7 @@ def os_run(args):
 def run_script(pel_ob):
     asf_run = pel_ob.settings.get('ASF_RUN')
     if asf_run:
-        print('-----\nasfshell')
+        print('-----\nasfrun')
         for command in asf_run:
             print(f'-----\n{command}')
             args = shlex.split(command)
