@@ -435,7 +435,7 @@ def main():
     parser_dir.add_argument("--output", help = "Pelican output path (default: %(default)s)", default = "site-generated")
     parser_dir.add_argument("--listen", help = "Pelican build in server mode (default: %(default)s)", action = "store_true")
     parser_dir.add_argument('--yaml-dir', help='Where pelicanconf.yaml is located (default: %(default)s)', default='.')
-    parser_dir.add_argument('--content-dir', help='Where is the content located (default: %{default)s)', default='content')
+    parser_dir.add_argument('--content-dir', help='Where is the content located (default: %(default)s)', default='content')
     parser_dir.set_defaults(func=build_dir)
 
     args = parser.parse_args()
