@@ -145,13 +145,16 @@ except:
     PLUGINS = ['toc', 'gfm']
 """)
 
+    # --debug means exception traces are shown
+    # TODO: would like to be able to set this from the yaml settings file
+    dbg = '--debug' if args.debug else ''
+
     # Call pelican
     buildpath = os.path.join(path, 'build/output')
     os.makedirs(buildpath, exist_ok = True)
     buildcmd = (BASH, '-c',
                 'source bin/activate; cd source && '
-                ### note: adding --debug can be handy
-                f'(pelican {content_dir} --settings {settings_path} -o {buildpath})',
+                f'(pelican {content_dir} --settings {settings_path} -o {buildpath} {dbg})',
                 )
     print("Building web site with:", buildcmd)
     env = os.environ.copy()
@@ -261,10 +264,13 @@ def build_dir(args):
     else:
         pel_options = ''
 
+    # --debug means exception traces are shown
+    # TODO: would like to be able to set this from the yaml settings file
+    dbg = '--debug' if args.debug else ''
+
     # Call pelican
     buildcmd = (BASH, '-c',
-                ### note: adding --debug can be handy
-                f'(pelican {content_dir} --settings {settings_path} --o {args.output} {pel_options})',
+                f'(pelican {content_dir} --settings {settings_path} --o {args.output} {pel_options} {dbg})',
                 )
     print("Building web site with:", buildcmd)
     env = os.environ.copy()
@@ -429,6 +435,7 @@ def main():
     parser_git.add_argument("--outputbranch", help = "Web site repository branch to commit output to (default: %(default)s)", default = "asf-site")
     parser_git.add_argument("--count", help = "Minimum number of html pages (default: %(default)s)", type = int, default = 0)
     parser_git.add_argument("--listen", help = "Start pelican -l after build (default: %(default)s)", action = "store_true")
+    parser_git.add_argument("--debug", help = "Run pelican with debug flag (show full exception traces)", action = "store_true")
     parser_git.set_defaults(func=locked_build)
 
     parser_dir = subparsers.add_parser("dir", help = "Build source in current directory and optionally serve the result")
@@ -436,6 +443,7 @@ def main():
     parser_dir.add_argument("--listen", help = "Pelican build in server mode (default: %(default)s)", action = "store_true")
     parser_dir.add_argument('--yaml-dir', help='Where pelicanconf.yaml is located (default: %(default)s)', default='.')
     parser_dir.add_argument('--content-dir', help='Where is the content located (default: %(default)s)', default='content')
+    parser_dir.add_argument("--debug", help = "Run pelican with debug flag (show full exception traces)", action = "store_true")
     parser_dir.set_defaults(func=build_dir)
 
     args = parser.parse_args()
