@@ -592,7 +592,11 @@ def process_twitter(handle, count, debug):
     tweet_fields = 'tweet.fields=author_id'
     url = f'https://api.twitter.com/2/tweets/search/recent?query={query}&{tweet_fields}'
     headers = {'Authorization': f'Bearer {bearer_token}'}
-    load = connect_to_endpoint(url, headers)
+    try:
+        load = connect_to_endpoint(url, headers)
+    except Exception as e:
+        print(f'ERROR: Cannot connect to Twitter for {handle}: {e}')
+        return sequence_list('twitter',[{ 'text': 'Cannot connect to Twitter at present' }])
     result_count = load['meta']['result_count']
     if result_count == 0:
         print(f'WARN: No recent tweets for {handle}')
