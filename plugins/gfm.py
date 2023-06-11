@@ -125,8 +125,13 @@ class GFMReader(pelican.readers.BaseReader):
     further is required by users of this Reader.
     """
 
-    # NOTE: the builtin MarkdownReader must be disabled. Otherwise, it will be
-    #       non-deterministic which Reader will be used for these files.
+    # NOTE: the builtin MarkdownReader should ideally be disabled to ensure it is not used
+    # For example, by not installing the markdown module.
+    # This may be tricky to do, so to ensure this class is used to process Markdown files,
+    # we reset the reader_classes list on receipt of the readers_init signal
+    # This is a bit of a hack, as it relies on the internal Pelican code.
+    # An alternative approach might be to adjust the READERS config setting.
+    # This is processed after the BaseReader subclasses, and that is unlikely to change.
     file_extensions = ['md', 'markdown', 'mkd', 'mdown']
 
     # Metadata is specified as a single, colon-separated line, such as:
@@ -229,8 +234,8 @@ class GFMReader(pelican.readers.BaseReader):
 
 
 def add_readers(readers):
-    readers.reader_classes['md'] = GFMReader
-
+    for ext in GFMReader.file_extensions:
+        readers.reader_classes[ext] = GFMReader
 
 def register():
     pelican.plugins.signals.readers_init.connect(add_readers)
