@@ -39,8 +39,8 @@ else:
 _LIBCMARK = f'libcmark-gfm{_LIBEXT}'
 try:
     cmark = ctypes.CDLL(os.path.join(_LIBDIR, _LIBCMARK))
-except OSError:
-    raise ImportError('%s not found. see build-cmark.sh' % (_LIBCMARK,))
+except OSError as e:
+    raise ImportError('%s not found. See build-cmark.sh. Error:\n%s' % (_LIBCMARK, e))
 
 # Newer releases have different naming for this library. Try it first.
 try:
