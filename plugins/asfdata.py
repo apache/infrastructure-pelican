@@ -517,15 +517,17 @@ def truncate_words(text, words):
 def process_blog(feed, count, words, debug):
     if debug:
         print(f'blog feed: {feed}')
-    content = requests.get(feed).text
     # See INFRA-23636: cannot check the page status, so just catch parsing errors
     try:
+        content = requests.get(feed).text
         dom = xml.dom.minidom.parseString(content)
         # dive into the dom to get 'entry' elements
         entries = dom.getElementsByTagName('entry')
         # we only want count many from the beginning
         entries = entries[:count]
     except xml.parsers.expat.ExpatError:
+        entries = []
+    except requests.exceptions.ConnectionError as e:
         entries = []
     v = [ ]
     for entry in entries:
@@ -590,7 +592,11 @@ def process_twitter(handle, count, debug):
     tweet_fields = 'tweet.fields=author_id'
     url = f'https://api.twitter.com/2/tweets/search/recent?query={query}&{tweet_fields}'
     headers = {'Authorization': f'Bearer {bearer_token}'}
-    load = connect_to_endpoint(url, headers)
+    try:
+        load = connect_to_endpoint(url, headers)
+    except Exception as e:
+        print(f'ERROR: Cannot connect to Twitter for {handle}: {e}')
+        return sequence_list('twitter',[{ 'text': 'Cannot connect to Twitter at present' }])
     result_count = load['meta']['result_count']
     if result_count == 0:
         print(f'WARN: No recent tweets for {handle}')

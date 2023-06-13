@@ -10,7 +10,7 @@ At a high level consider the following sequence of events:
 
    ```python
    PLUGIN_PATHS = ['./theme/plugins']
-   PLUGINS = ['asfgenid', 'asfshell', 'asfdata', 'gfm', 'asfreader', 'asfcopy']
+   PLUGINS = ['asfgenid', 'asfrun', 'asfdata', 'gfm', 'asfreader', 'asfcopy']
    ```
 
 2. Init (initialized). At this point any ASF_DATA is read into a metadata dictionary made available in every page.
@@ -57,7 +57,7 @@ At a high level consider the following sequence of events:
    }
    ```
 
-   - The [asfshell plugin](./asfshell.py) runs shell scripts
+   - The [asfrun plugin](./asfrun.py) runs shell scripts
 
    ```yaml
    setup:

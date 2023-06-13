@@ -65,7 +65,7 @@ def get_pages(generators):
     for g in generators:
         if isinstance(g, PagesGenerator):
             for p in g.pages:
-                # use an absolute path 
+                # use an absolute path
                 save_as = '/' + p.save_as
                 if save_as.endswith('/index.html'):
                     # use "/" for the filename of index.html files assuring that they are first in a folder's list

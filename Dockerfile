@@ -38,8 +38,12 @@
 #    cd /tmp/<project>/source
 #    pelican -b '0.0.0.0' -l
 #
+
+# Use the Python version as installed on CI pelican builders (2023-06-02)
+ARG PYTHON_VERSION=3.8.10
+
 # Build basic Pelican image
-FROM python:3.9.5-slim-buster as pelican-asf
+FROM python:${PYTHON_VERSION}-slim-buster as pelican-asf
 
 RUN apt update && apt upgrade -y
 RUN apt install curl cmake build-essential -y
@@ -54,7 +58,9 @@ RUN ./bin/build-cmark.sh | grep LIBCMARKDIR > LIBCMARKDIR.sh
 # Standard Pelican stuff
 # rebase the image to save up to 230MB of image size
 # image does not need curl, cmake and build-essential
-FROM python:3.9.5-slim-buster
+# Use the Python version as installed on CI pelican builders (2023-06-02)
+FROM python:${PYTHON_VERSION}-slim-buster
+
 
 RUN apt update && apt upgrade -y
 # git is used by `buildsite.py git`
@@ -64,16 +70,21 @@ RUN apt install subversion -y
 # we likely do not need the following
 # RUN apt install wget unzip fontconfig -y
 
-ARG PELICAN_VERSION=4.7.0
-RUN pip install pelican==${PELICAN_VERSION}
+# Use the Pelican version as installed on CI pelican builders (2023-06-02)
+ARG PELICAN_VERSION=4.5.4
+# Need markdown as fallback for gfm as documented in ASF.YAML
+RUN pip install pelican[markdown]==${PELICAN_VERSION}
+# [1] https://cwiki.apache.org/confluence/display/INFRA/Git+-+.asf.yaml+features#Git.asf.yamlfeatures-PelicanCMS
 
-# Copy the built cmark and ASF 
+# Copy the built cmark and ASF
 WORKDIR /tmp/pelican-asf
 COPY --from=pelican-asf /tmp/pelican-asf .
 
 COPY requirements.txt .
 # Don't automatically load dependencies; please add them to requirements.txt instead
 RUN pip install -r requirements.txt --no-deps
+# Could perhaps be added to requirements.txt but that would affect other uses
+RUN pip install 'MarkupSafe<2.1.0' # needed for Pelican 4.5.4
 
 # Now add the local code; do this last to avoid unnecessary rebuilds
 COPY bin bin
@@ -89,5 +100,8 @@ RUN ln -s /usr/local/bin/python3 /usr/bin/python3
 
 # Run Pelican
 WORKDIR /site
+
+# Add settings for interactive use
+RUN { cat /tmp/pelican-asf/LIBCMARKDIR.sh; echo "alias buildsite='/tmp/pelican-asf/bin/buildsite.py dir --listen'"; } >>/root/.bashrc
 
 ENTRYPOINT [ "/bin/bash", "-c", "source /tmp/pelican-asf/LIBCMARKDIR.sh && /tmp/pelican-asf/bin/buildsite.py dir --listen" ]
