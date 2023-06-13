@@ -72,7 +72,9 @@ RUN apt install subversion -y
 
 # Use the Pelican version as installed on CI pelican builders (2023-06-02)
 ARG PELICAN_VERSION=4.5.4
-RUN pip install pelican==${PELICAN_VERSION}
+# Need markdown as fallback for gfm as documented in ASF.YAML
+RUN pip install pelican[markdown]==${PELICAN_VERSION}
+# [1] https://cwiki.apache.org/confluence/display/INFRA/Git+-+.asf.yaml+features#Git.asf.yamlfeatures-PelicanCMS
 
 # Copy the built cmark and ASF
 WORKDIR /tmp/pelican-asf
