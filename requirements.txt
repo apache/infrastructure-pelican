@@ -1,4 +1,4 @@
-pelican
+pelican # TODO: should this include [markdown] ?
 pelican-sitemap # pelican plugin offering
 soupsieve # needed by BeautifulSoup4
 BeautifulSoup4 # needed by several plugins
