@@ -157,6 +157,7 @@ class GFMReader(pelican.readers.BaseReader):
 
             # Extract the metadata from the header of the text
             lines = text.splitlines()
+            i = 0 # See https://github.com/apache/infrastructure-pelican/issues/70
             for i in range(len(lines)):
                 line = lines[i]
                 match = GFMReader.RE_METADATA.match(line)
