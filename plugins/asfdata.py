@@ -527,7 +527,7 @@ def process_blog(feed, count, words, debug):
         entries = entries[:count]
     except xml.parsers.expat.ExpatError:
         entries = []
-    except requests.exceptions.ConnectionError as e:
+    except requests.exceptions.ConnectionError:
         entries = []
     v = [ ]
     for entry in entries:

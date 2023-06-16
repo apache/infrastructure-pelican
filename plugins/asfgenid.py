@@ -124,12 +124,12 @@ class HtmlTreeNode(object):
 
 
 # assure configuration
-def init_default_config(pelican):
+def init_default_config(pel_obj):
     from pelican.settings import DEFAULT_CONFIG
 
     DEFAULT_CONFIG.setdefault('ASF_GENID', ASF_GENID)
-    if(pelican):
-        pelican.settings.setdefault('ASF_GENID', ASF_GENID)
+    if(pel_obj):
+        pel_obj.settings.setdefault('ASF_GENID', ASF_GENID)
 
 
 # from Apache CMS markdown/extensions/headerid.py - slugify in the same way as the Apache CMS

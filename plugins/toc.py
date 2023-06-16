@@ -95,7 +95,7 @@ class HtmlTreeNode(object):
         return ret
 
 
-def init_default_config(pelican):
+def init_default_config(pel_ob):
     from pelican.settings import DEFAULT_CONFIG
 
     TOC_DEFAULT = {
@@ -104,8 +104,8 @@ def init_default_config(pelican):
     }
 
     DEFAULT_CONFIG.setdefault('TOC', TOC_DEFAULT)
-    if(pelican):
-        pelican.settings.setdefault('TOC', TOC_DEFAULT)
+    if(pel_ob):
+        pel_ob.settings.setdefault('TOC', TOC_DEFAULT)
 
 
 def generate_toc(content):
