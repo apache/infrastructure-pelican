@@ -34,7 +34,5 @@ jobs:
     - name: Run test
       run: |
         source libcmark.sh
-        export
-        pwd
         cd tests
-        compare_meta.sh
+        ./compare_meta.sh
