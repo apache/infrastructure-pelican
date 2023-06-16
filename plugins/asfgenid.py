@@ -283,7 +283,7 @@ def make_breadcrumbs(rel_source_path, title):
     parts = rel_source_path.split('/')
     url = '/'
     crumbs = []
-    crumbs.append(f'<a href="/">Home</a>&nbsp;&raquo&nbsp;')
+    crumbs.append('<a href="/">Home</a>&nbsp;&raquo&nbsp;')
     # don't process the filename part
     last = len(parts)-1
     for i in range(last):
