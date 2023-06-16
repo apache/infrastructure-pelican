@@ -1,0 +1,8 @@
+metadata:
+{% for name, value in page.metadata.items() %}
+    {% if name != 'slug' and name != 'reader' %}
+    {{ name }} {{ value }} {{ value.__class__}}
+    {% endif %}
+{% endfor %}
+
+content:  {{ page.content.rstrip() }}
