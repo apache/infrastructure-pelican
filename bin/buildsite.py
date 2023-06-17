@@ -277,6 +277,14 @@ def build_dir(args):
 
 
 def generate_settings(source_yaml, settings_path, builtin_p_paths=None, sourcepath='.'):
+    """Generate the Pelican settings file
+
+    :param source_yaml: the settings in YAML form
+    :param settings_path: the path name to generate
+    :param builtin_p_paths: list of plugin paths (defaults to [])
+    :param sourcepath: path to source (defaults to '.')
+
+    """
     ydata = yaml.safe_load(open(source_yaml))
 
     tdata = ydata['site']  # Easy to copy these simple values.
