@@ -397,13 +397,13 @@ def generate_id(content):
             print(f'    #{tag}')
 
 
-def tb_connect(pel_ob):
+def tb_connect(content_obj):
     """Print any exception, before Pelican chews it into nothingness."""
     try:
-        generate_id(pel_ob)
+        generate_id(content_obj)
     except Exception:
         print('-----', file=sys.stderr)
-        print('FATAL: %s' % (pel_ob.relative_source_path), file=sys.stderr)
+        print('FATAL: %s' % (content_obj.relative_source_path), file=sys.stderr)
         traceback.print_exc()
         # if we have errors in this module then we want to quit to avoid erasing the site
         sys.exit(4)
