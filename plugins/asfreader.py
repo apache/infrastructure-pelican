@@ -48,7 +48,7 @@ class ASFTemplateReader(ezt.Reader):
         self.text = text
 
     def read_other(self, relative):
-        return ezt._FileReader(os.path.join(self.source_dir, relative))
+        return ezt._FileReader(os.path.join(self.source_dir, relative)) # pylint: disable=protected-access
 
     def filename(self):
         return self.fname

@@ -115,7 +115,7 @@ def generate_toc(content):
     all_ids = set()
     title = content.metadata.get('title', 'Title')
     tree = node = HtmlTreeNode(None, title, 'h0', '')
-    soup = BeautifulSoup(content._content, 'html.parser')
+    soup = BeautifulSoup(content._content, 'html.parser') # pylint: disable=protected-access
     settoc = False
 
     try:
@@ -143,7 +143,7 @@ def generate_toc(content):
             if itoc:
                 itoc.replaceWith(tree_soup)
 
-        content._content = soup.decode(formatter='html')
+        content._content = soup.decode(formatter='html')  # pylint: disable=protected-access
 
 
 def register():

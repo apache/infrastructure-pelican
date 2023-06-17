@@ -164,7 +164,7 @@ def permalink(soup, mod_element):
 
 # fixup cmark content - note that this may be too hungry. It may need to occur later and skipped in codeblock and pre tags.
 def fixup_content(content):
-    text = content._content
+    text = content._content # pylint: disable=protected-access
     modified = False
     # Find messed up html
     for regex, replace in FIXUP_UNSAFE:
@@ -173,7 +173,7 @@ def fixup_content(content):
             modified = True
             text = re.sub(regex, replace, text)
     if modified:
-        content._content = text
+        content._content = text # pylint: disable=protected-access
 
 
 # expand metadata found in {{ key }}
@@ -332,7 +332,7 @@ def generate_id(content):
 
     # step 2 - prepare for genid processes
     # parse html content into BeautifulSoup4
-    soup = BeautifulSoup(content._content, 'html.parser')
+    soup = BeautifulSoup(content._content, 'html.parser') # pylint: disable=protected-access
     # page title
     title = content.metadata.get('title', 'Title')
     # assure relative source path is in the metadata
@@ -389,7 +389,7 @@ def generate_id(content):
             generate_toc(content, tags, title, asf_genid['toc_headers'], asf_genid['debug'])
 
     # step 9 - reset the html content
-    content._content = soup.decode(formatter='html')
+    content._content = soup.decode(formatter='html')  # pylint: disable=protected-access
 
     # step 10 - output all of the permalinks created
     if asf_genid['debug']:
