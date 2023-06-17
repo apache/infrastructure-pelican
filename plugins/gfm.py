@@ -157,6 +157,7 @@ class GFMReader(pelican.readers.BaseReader):
 
             # Extract the metadata from the header of the text
             lines = text.splitlines()
+            i = 0 # See https://github.com/apache/infrastructure-pelican/issues/70
             for i in range(len(lines)):
                 line = lines[i]
                 match = GFMReader.RE_METADATA.match(line)
@@ -193,15 +194,15 @@ class GFMReader(pelican.readers.BaseReader):
 
         # read metadata and markdown content
         text, metadata = self.read_source(source_path)
-        assert text
-        assert metadata
+        assert text, 'Text must not be empty'
+        assert metadata, 'Metadata must not be empty'
         # Render the markdown into HTML
         if sys.version_info >= (3, 0):
             text = text.encode('utf-8')
             content = self.render(text).decode('utf-8')
         else:
             content = self.render(text)
-        assert content
+        assert content, 'Did not expect content to be empty'
 
         return content, metadata
 
@@ -209,16 +210,16 @@ class GFMReader(pelican.readers.BaseReader):
         "Use cmark-gfm to render the Markdown into an HTML fragment."
 
         parser = F_cmark_parser_new(OPTS)
-        assert parser
+        assert parser, 'Failed to initialise parser'
         for name in EXTENSIONS:
             ext = F_cmark_find_syntax_extension(name.encode('utf-8'))
-            assert ext
+            assert ext, 'Failed to find UTF-8 extension'
             rv = F_cmark_parser_attach_syntax_extension(parser, ext)
-            assert rv
+            assert rv, 'Failed to attach the UTF-8 extension'
         exts = F_cmark_parser_get_syntax_extensions(parser)
         F_cmark_parser_feed(parser, text, len(text))
         doc = F_cmark_parser_finish(parser)
-        assert doc
+        assert doc, 'Did not expect rendered output to be empty'
 
         output = F_cmark_render_html(doc, OPTS, exts)
 

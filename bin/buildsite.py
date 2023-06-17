@@ -207,7 +207,7 @@ except:
     subprocess.run((GIT, 'add', 'output/'), check=True)
 
     # Check if there are any changes.
-    cp = subprocess.run((GIT, 'diff', '--cached', '--quiet'))
+    cp = subprocess.run((GIT, 'diff', '--cached', '--quiet'), check = False) # checked below
     if cp.returncode == 0:
         # There were no differences reported.
         print('Nothing new to commit. Ignoring this build.')
@@ -284,7 +284,15 @@ def build_dir(args):
         pass
 
 
-def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath='.'):
+def generate_settings(source_yaml, settings_path, builtin_p_paths=None, sourcepath='.'):
+    """Generate the Pelican settings file
+
+    :param source_yaml: the settings in YAML form
+    :param settings_path: the path name to generate
+    :param builtin_p_paths: list of plugin paths (defaults to [])
+    :param sourcepath: path to source (defaults to '.')
+
+    """
     ydata = yaml.safe_load(open(source_yaml))
 
     tdata = ydata['site']  # Easy to copy these simple values.
@@ -298,6 +306,8 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
     tdata['pages'] = content.get('pages')
     tdata['static'] = content.get('static_dirs', [ '.', ])
 
+    if builtin_p_paths is None:
+        builtin_p_paths = []
     tdata['p_paths'] = builtin_p_paths
     tdata['use'] = ['gfm']
 

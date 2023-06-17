@@ -342,9 +342,9 @@ def process_sequence(metadata, seq, sequence, load, debug):
     if save_metadata:
         metadata[seq] = reference
         try:
-          metadata[f'{seq}_size'] = len(reference)
+            metadata[f'{seq}_size'] = len(reference)
         except TypeError: # allow for integer
-          pass
+            pass
 
 
 # create metadata sequences and dictionaries from a data load
@@ -527,7 +527,7 @@ def process_blog(feed, count, words, debug):
         entries = entries[:count]
     except xml.parsers.expat.ExpatError:
         entries = []
-    except requests.exceptions.ConnectionError as e:
+    except requests.exceptions.ConnectionError:
         entries = []
     v = [ ]
     for entry in entries:
