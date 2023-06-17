@@ -276,7 +276,7 @@ def build_dir(args):
         pass
 
 
-def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath='.'):
+def generate_settings(source_yaml, settings_path, builtin_p_paths=None, sourcepath='.'):
     ydata = yaml.safe_load(open(source_yaml))
 
     tdata = ydata['site']  # Easy to copy these simple values.
@@ -290,6 +290,8 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
     tdata['pages'] = content.get('pages')
     tdata['static'] = content.get('static_dirs', [ '.', ])
 
+    if builtin_p_paths is None:
+        builtin_p_paths = []
     tdata['p_paths'] = builtin_p_paths
     tdata['use'] = ['gfm']
 
