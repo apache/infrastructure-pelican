@@ -1,4 +1,3 @@
-SITEMAP = {}
 # Basic information about the site.
 SITENAME = 'Apache Template'
 SITEDESC = 'Provides a template for projects wishing to use the Pelican ASF static content system'
@@ -12,6 +11,7 @@ TIMEZONE = 'UTC'
 # Theme includes templates and possibly static files
 THEME = 'themes/trivial'
 # Specify location of plugins, and which to use
+PLUGINS = [] # don't autoload any plugins
 # All content is located at '.' (aka content/ )
 PAGE_PATHS = [ '.' ]
 STATIC_PATHS = [ '.',  ]
@@ -37,8 +37,6 @@ ARTICLE_URL = 'blog/{slug}.html'
 ARTICLE_SAVE_AS = 'blog/{slug}.html'
 # Disable all processing of .html files
 READERS = { 'html': None, }
-# TODO: find out how to disable the sitemap
-SITEMAP = {'format': 'txt'}
 
 
 
