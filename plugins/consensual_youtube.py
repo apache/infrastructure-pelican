@@ -92,21 +92,10 @@ JS_SCRIPT = '''
       .forEach((video) => video.addEventListener('click', addElement))
 '''
 
-# Path to read pelican input files from
-content_path = ''
-# Path to write output files to
-output_path = ''
-
-def pelican_init(pelicanobj):
-    global output_path, content_path
-
-    content_path = pelicanobj.settings['PATH']
-    output_path = pelicanobj.settings['OUTPUT_PATH']
-
 def generate_youtube(content):
     if isinstance(content, contents.Static):
         return
-    soup = BeautifulSoup(content._content, 'html.parser')
+    soup = BeautifulSoup(content._content, 'html.parser') # pylint: disable=protected-access
     tags = soup.find_all('youtube')
 
     if not tags:
@@ -121,12 +110,12 @@ def generate_youtube(content):
     soup.append(script)
 
     for tag in tags:
-        replace_tag(soup, tag)
+        replace_tag(content.settings['PATH'], content.settings['OUTPUT_PATH'], soup, tag)
 
-    content._content = soup.decode(formatter='html')
+    content._content = soup.decode(formatter='html') # pylint: disable=protected-access
 
-def replace_tag(soup, tag):
-    tag.name = 'div';
+def replace_tag(input_path, output_path, soup, tag):
+    tag.name = 'div'
 
     if not tag.has_attr('youtube_id'):
         raise ValueError('Attribute "youtube_id" is mandatory for "youtube" tags')
@@ -138,8 +127,9 @@ def replace_tag(soup, tag):
     # fetch it from YouTube at site generation time and place it
     # straight into the output directory:
     preview = f'/img/yt_preview_{yt_id}.jpg'
-    if not path.isfile(content_path + preview):
-        request.urlretrieve(f'https://img.youtube.com/vi/{yt_id}/0.jpg', output_path + preview)
+    if not path.isfile(input_path + preview):
+        request.urlretrieve(f'https://img.youtube.com/vi/{yt_id}/0.jpg',
+                            output_path + preview)
 
     # Default YouTube player size is 360p:
     player_width = 640
@@ -156,5 +146,4 @@ def replace_tag(soup, tag):
     tag.append(warning)
 
 def register():
-    signals.initialized.connect(pelican_init)
     signals.content_object_init.connect(generate_youtube)
