@@ -92,17 +92,6 @@ JS_SCRIPT = '''
       .forEach((video) => video.addEventListener('click', addElement))
 '''
 
-# Path to read pelican input files from
-content_path = ''
-# Path to write output files to
-output_path = ''
-
-def pelican_init(pelicanobj):
-    global output_path, content_path
-
-    content_path = pelicanobj.settings['PATH']
-    output_path = pelicanobj.settings['OUTPUT_PATH']
-
 def generate_youtube(content):
     if isinstance(content, contents.Static):
         return
@@ -121,15 +110,20 @@ def generate_youtube(content):
     soup.append(script)
 
     for tag in tags:
-        replace_tag(soup, tag)
+        replace_tag(soup, tag, content)
 
     content._content = soup.decode(formatter='html')
 
-def replace_tag(soup, tag):
+def replace_tag(soup, tag, content):
     tag.name = 'div';
 
     if not tag.has_attr('youtube_id'):
         raise ValueError('Attribute "youtube_id" is mandatory for "youtube" tags')
+
+    # Path to read pelican input files from
+    content_path = content.settings['PATH']
+    # Path to write output files to
+    output_path = content.settings['OUTPUT_PATH']
 
     yt_id = tag['youtube_id']
 
@@ -156,5 +150,4 @@ def replace_tag(soup, tag):
     tag.append(warning)
 
 def register():
-    signals.initialized.connect(pelican_init)
     signals.content_object_init.connect(generate_youtube)
