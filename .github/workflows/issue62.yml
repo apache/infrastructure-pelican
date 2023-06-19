@@ -1,8 +1,6 @@
 name: Unit test issue62 - correct metadata types
 on:
   push:
-    paths:
-      - '**/issue62.yml'
 
   workflow_dispatch:
 
@@ -15,7 +13,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        python-version: ["3.10", 3.8]
+        # Not sure it's worth testing on multiple Pythons
+        python-version: [3.8]
     steps:
     - uses: actions/checkout@master
       with:
@@ -29,11 +28,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install pelican[Markdown]==4.5.4
         pip install -r requirements.txt
+        pip install 'MarkupSafe<2.1.0' # needed for Pelican 4.5.4
     - name: Build GFM
       run: |
         bin/build-cmark.sh | grep LIBCMARKDIR > libcmark.sh
     - name: Run test
       run: |
         source libcmark.sh
-        cd tests
+        cd tests/issue62
         ./compare_meta.sh
