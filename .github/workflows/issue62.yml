@@ -28,6 +28,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install pelican[Markdown]==4.5.4
         pip install -r requirements.txt
+        pip install 'MarkupSafe<2.1.0' # needed for Pelican 4.5.4
     - name: Build GFM
       run: |
         bin/build-cmark.sh | grep LIBCMARKDIR > libcmark.sh
