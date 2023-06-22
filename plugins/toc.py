@@ -148,4 +148,4 @@ def generate_toc(content):
 
 def register():
     signals.initialized.connect(init_default_config)
-signals.content_object_init.connect(generate_toc)
+    signals.content_object_init.connect(generate_toc)

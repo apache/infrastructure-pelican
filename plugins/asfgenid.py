@@ -411,6 +411,4 @@ def tb_connect(content_obj):
 
 def register():
     pelican.plugins.signals.initialized.connect(init_default_config)
-
-
-pelican.plugins.signals.content_object_init.connect(tb_connect)
+    pelican.plugins.signals.content_object_init.connect(tb_connect)
