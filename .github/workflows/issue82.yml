@@ -1,0 +1,42 @@
+name: Unit test issue82 - asfdata corrupts output
+on:
+  push:
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        # Not sure it's worth testing on multiple Pythons
+        python-version: [3.8]
+    steps:
+    - uses: actions/checkout@master
+      with:
+        persist-credentials: false
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pelican[Markdown]==4.5.4
+        pip install -r requirements.txt
+        pip install 'MarkupSafe<2.1.0' # needed for Pelican 4.5.4
+    - name: Run test
+      run: |
+        cd tests/issue82
+        rm -f out/*
+        PYTHONPATH="../.." python testasfdata.py
+        echo "show that CI matches OK when using separate sections"
+        diff out/asfdataboth2.out out/asfdataci.out || true
+        echo "=========================="
+        echo "Show difference when using the same section"
+        diff out/asfdataboth1.out out/asfdataci.out
+        echo "=========================="
