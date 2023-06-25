@@ -33,6 +33,7 @@ jobs:
       run: |
         cd tests/issue82
         rm -f out/*
+        mkdir out
         PYTHONPATH="../.." python testasfdata.py
         echo "show that CI matches OK when using separate sections"
         diff out/asfdataboth2.out out/asfdataci.out || true
