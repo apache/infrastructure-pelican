@@ -348,11 +348,13 @@ def process_sequence(metadata, seq, sequence, load, debug):
 
 
 # create metadata sequences and dictionaries from a data load
-def process_load(metadata, value, load, debug):
+def process_load(metadata, value, origload, debug):
     for seq in value:
         if seq not in ('url', 'file'):
             # one or more sequences
             sequence = value[seq]
+            load = {}
+            load.update(origload) # mutations must not affect other sequences
             process_sequence(metadata, seq, sequence, load, debug)
 
 
