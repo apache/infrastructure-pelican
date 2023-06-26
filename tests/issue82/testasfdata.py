@@ -31,6 +31,9 @@ def test(name):
     asfdata.config_read_data(pc)
     pp = pprint.PrettyPrinter(indent=2,stream=open(output, 'w'))
     metadata = settings['ASF_DATA']['metadata']
+    # Not interested in these for comparisons
+    metadata.pop('officers', None)
+    metadata.pop('officers_size', None)
     pp.pprint(metadata)
 
 test('asfdataboth1')
