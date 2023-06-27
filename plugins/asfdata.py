@@ -48,6 +48,8 @@ FIXUP_HTML = [
     (re.compile(r'&gt;'), '>'),
 ]
 
+REQUESTS_TIMEOUT = 5 # timeout for requests calls
+
 # Format of svn ls -v output: Jan 1 1970
 SVN_DATE_FORMAT = "%b %d %Y"
 
@@ -78,7 +80,8 @@ def load_data(path, content, debug):
 
 # load data source from a url.
 def url_data(url, debug):
-    return load_data( url, requests.get(url).text, debug)
+    print("url_data",url, debug)
+    return load_data( url, requests.get(url, timeout=REQUESTS_TIMEOUT).text, debug)
 
 
 # load data source from a file.
@@ -141,7 +144,7 @@ def add_logo(reference, part):
         # the logo pattern includes a place to insert the project/podling key
         logo = (parts[0].format(item.key_id))
         # HEAD request
-        response = requests.head('https://www.apache.org/' + logo)
+        response = requests.head('https://www.apache.org/' + logo, timeout=REQUESTS_TIMEOUT)
         if response.status_code != 200:
             # logo not found - use the default logo
             logo = parts[1]
@@ -519,7 +522,7 @@ def process_blog(feed, count, words, debug):
         print(f'blog feed: {feed}')
     # See INFRA-23636: cannot check the page status, so just catch parsing errors
     try:
-        content = requests.get(feed).text
+        content = requests.get(feed, timeout=REQUESTS_TIMEOUT).text
         dom = xml.dom.minidom.parseString(content)
         # dive into the dom to get 'entry' elements
         entries = dom.getElementsByTagName('entry')
@@ -571,7 +574,7 @@ def twitter_auth():
 
 # retrieve from twitter
 def connect_to_endpoint(url, headers):
-    response = requests.request('GET', url, headers=headers)
+    response = requests.request('GET', url, headers=headers, timeout=REQUESTS_TIMEOUT)
     if response.status_code != 200:
         raise Exception(response.status_code, response.text)
     return response.json()
@@ -620,7 +623,7 @@ def process_eccn(fname, debug):
     if debug:
         print('-----\nECCN:', fname)
     if fname.startswith("https://"):
-        j = yaml.safe_load(requests.get(fname).text)
+        j = yaml.safe_load(requests.get(fname, timeout=REQUESTS_TIMEOUT).text)
     else:
         j = yaml.safe_load(open(fname))
 
