@@ -27,7 +27,7 @@ def process_settings(pelicanobj):
     # Get the user specified settings
     try:
         settings = pelicanobj.settings['MD_INLINE']
-    except:
+    except Exception: # TODO: narrow further to expected Exceptions
         settings = None
 
     # If settings have been specified, add them to the config
@@ -45,7 +45,7 @@ def inline_markdown_extension(pelicanobj, config):
             pelicanobj.settings['MD_EXTENSIONS'].append(PelicanInlineMarkdownExtension(config))
         else:
             pelicanobj.settings['MARKDOWN'].setdefault('extensions', []).append(PelicanInlineMarkdownExtension(config))
-    except:
+    except Exception: # TODO: narrow further to expected Exceptions
         sys.excepthook(*sys.exc_info())
         sys.stderr.write("\nError - the pelican Markdown extension failed to configure. Inline Markdown extension is non-functional.\n")
         sys.stderr.flush()

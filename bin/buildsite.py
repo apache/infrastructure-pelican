@@ -141,17 +141,21 @@ def start_build(args):
             f.write("""
 try:
     PLUGINS += ['toc']
-except:
+except Exception: # TODO: narrow further to expected Exceptions
     PLUGINS = ['toc', 'gfm']
 """)
+
+    # --debug means exception traces are shown
+    # TODO: would like to be able to set this from the yaml settings file
+    dbg = '--debug' if args.debug else ''
+    delout = '--delete-output-directory' if args.delete else ''
 
     # Call pelican
     buildpath = os.path.join(path, 'build/output')
     os.makedirs(buildpath, exist_ok = True)
     buildcmd = (BASH, '-c',
                 'source bin/activate; cd source && '
-                ### note: adding --debug can be handy
-                f'(pelican {content_dir} --settings {settings_path} -o {buildpath})',
+                f'(pelican {content_dir} --settings {settings_path} -o {buildpath} {dbg} {delout})',
                 )
     print("Building web site with:", buildcmd)
     env = os.environ.copy()
@@ -179,7 +183,7 @@ except:
         print("- Doing fresh checkout of branch %s" % args.outputbranch)
         subprocess.run((GIT, 'checkout', args.outputbranch, '-f'), check=True)
         subprocess.run((GIT, 'pull'), check=True)
-    except:
+    except Exception: # TODO: narrow further to expected Exceptions
         print("- Branch %s does not exist (yet), creating it..." % args.outputbranch)
         # If .asf.yaml exists, which it should, make a copy of it in memory for later
         asfyml = os.path.join(sourcepath, '.asf.yaml')
@@ -203,7 +207,7 @@ except:
     subprocess.run((GIT, 'add', 'output/'), check=True)
 
     # Check if there are any changes.
-    cp = subprocess.run((GIT, 'diff', '--cached', '--quiet'))
+    cp = subprocess.run((GIT, 'diff', '--cached', '--quiet'), check = False) # checked below
     if cp.returncode == 0:
         # There were no differences reported.
         print('Nothing new to commit. Ignoring this build.')
@@ -261,10 +265,14 @@ def build_dir(args):
     else:
         pel_options = ''
 
+    # --debug means exception traces are shown
+    # TODO: would like to be able to set this from the yaml settings file
+    dbg = '--debug' if args.debug else ''
+    delout = '--delete-output-directory' if args.delete else ''
+
     # Call pelican
     buildcmd = (BASH, '-c',
-                ### note: adding --debug can be handy
-                f'(pelican {content_dir} --settings {settings_path} --o {args.output} {pel_options})',
+                f'(pelican {content_dir} --settings {settings_path} --o {args.output} {pel_options} {dbg} {delout})',
                 )
     print("Building web site with:", buildcmd)
     env = os.environ.copy()
@@ -276,7 +284,15 @@ def build_dir(args):
         pass
 
 
-def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath='.'):
+def generate_settings(source_yaml, settings_path, builtin_p_paths=None, sourcepath='.'):
+    """Generate the Pelican settings file
+
+    :param source_yaml: the settings in YAML form
+    :param settings_path: the path name to generate
+    :param builtin_p_paths: list of plugin paths (defaults to [])
+    :param sourcepath: path to source (defaults to '.')
+
+    """
     ydata = yaml.safe_load(open(source_yaml))
 
     tdata = ydata['site']  # Easy to copy these simple values.
@@ -290,6 +306,8 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=[], sourcepath
     tdata['pages'] = content.get('pages')
     tdata['static'] = content.get('static_dirs', [ '.', ])
 
+    if builtin_p_paths is None:
+        builtin_p_paths = []
     tdata['p_paths'] = builtin_p_paths
     tdata['use'] = ['gfm']
 
@@ -435,6 +453,8 @@ def main():
     parser_git.add_argument("--outputbranch", help = "Web site repository branch to commit output to (default: %(default)s)", default = "asf-site")
     parser_git.add_argument("--count", help = "Minimum number of html pages (default: %(default)s)", type = int, default = 0)
     parser_git.add_argument("--listen", help = "Start pelican -l after build (default: %(default)s)", action = "store_true")
+    parser_git.add_argument("--debug", help = "Run pelican with debug flag (show full exception traces)", action = "store_true")
+    parser_git.add_argument("--delete", help = "Delete output directory first", action = "store_true")
     parser_git.set_defaults(func=locked_build)
 
     parser_dir = subparsers.add_parser("dir", help = "Build source in current directory and optionally serve the result")
@@ -442,6 +462,8 @@ def main():
     parser_dir.add_argument("--listen", help = "Pelican build in server mode (default: %(default)s)", action = "store_true")
     parser_dir.add_argument('--yaml-dir', help='Where pelicanconf.yaml is located (default: %(default)s)', default='.')
     parser_dir.add_argument('--content-dir', help='Where is the content located (default: %(default)s)', default='content')
+    parser_dir.add_argument("--debug", help = "Run pelican with debug flag (show full exception traces)", action = "store_true")
+    parser_dir.add_argument("--delete", help = "Delete output directory first", action = "store_true")
     parser_dir.set_defaults(func=build_dir)
 
     args = parser.parse_args()
