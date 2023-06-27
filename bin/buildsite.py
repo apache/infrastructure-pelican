@@ -141,7 +141,7 @@ def start_build(args):
             f.write("""
 try:
     PLUGINS += ['toc']
-except:
+except Exception: # TODO: narrow further to expected Exceptions
     PLUGINS = ['toc', 'gfm']
 """)
 
@@ -183,7 +183,7 @@ except:
         print("- Doing fresh checkout of branch %s" % args.outputbranch)
         subprocess.run((GIT, 'checkout', args.outputbranch, '-f'), check=True)
         subprocess.run((GIT, 'pull'), check=True)
-    except:
+    except Exception: # TODO: narrow further to expected Exceptions
         print("- Branch %s does not exist (yet), creating it..." % args.outputbranch)
         # If .asf.yaml exists, which it should, make a copy of it in memory for later
         asfyml = os.path.join(sourcepath, '.asf.yaml')
