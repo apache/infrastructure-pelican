@@ -71,12 +71,12 @@ At a high level consider the following sequence of events:
    ]
    ```
 
-   - The [asfpostrun plugin](./asfpostrun.py) runs shell scripts during finalization
+   - The [asfrun plugin](./asfrun.py) also runs shell scripts during finalization
 
    ```yaml
    setup:
      postrun:
-       - /bin/bash shell.sh
+       - /bin/bash postshell.sh
    ```
 
    ```python
