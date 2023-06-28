@@ -30,6 +30,7 @@ import re
 import traceback
 import operator
 import pprint
+import copy
 
 import requests
 import yaml
@@ -353,8 +354,7 @@ def process_load(metadata, value, origload, debug):
         if seq not in ('url', 'file'):
             # one or more sequences
             sequence = value[seq]
-            load = {}
-            load.update(origload) # mutations must not affect other sequences
+            load = copy.deepcopy(origload) # mutations must not affect other sequences
             process_sequence(metadata, seq, sequence, load, debug)
 
 
