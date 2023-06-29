@@ -94,9 +94,9 @@ class ASFReader(gfm.GFMReader):
             # prepare text as an ezt template
             # compress_whitespace=0 is required as blank lines and indentation have meaning in markdown.
             template = ezt.Template(compress_whitespace=0)
+            assert template
             reader = ASFTemplateReader(source_path, text)
             template.parse(reader, base_format=ezt.FORMAT_HTML)
-            assert template
             # generate content from ezt template with metadata
             fp = io.StringIO()
             template.generate(fp, metadata)
