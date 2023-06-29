@@ -794,7 +794,8 @@ def config_read_data(pel_ob):
     for key in metadata:
         if debug:
             print(f'metadata[{key}] =')
-            print(metadata[key])
+            pp = pprint.PrettyPrinter(indent=2)
+            pp.pprint(metadata[key])
             print('-----')
         elif isinstance(metadata[key], str):
             print(f'metadata[{key}] = "{metadata[key]}"')
