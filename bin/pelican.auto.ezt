@@ -106,8 +106,12 @@ ASF_DATA = {
 }
 [end]
 [if-any uses_run]
-# Configure the asfrun plugin
+# Configure the asfrun plugin (initialization)
 ASF_RUN = [ [for run]'[run]', [end] ]
+[end]
+[if-any uses_postrun]
+# Configure the asfrun plugin (finalization)
+ASF_POSTRUN = [ [for postrun]'[postrun]', [end] ]
 [end]
 [if-any uses_ignore]
 # Configure ignore files

@@ -57,7 +57,7 @@ At a high level consider the following sequence of events:
    }
    ```
 
-   - The [asfrun plugin](./asfrun.py) runs shell scripts
+   - The [asfrun plugin](./asfrun.py) runs shell scripts during initialization
 
    ```yaml
    setup:
@@ -68,6 +68,20 @@ At a high level consider the following sequence of events:
    ```python
    ASF_RUN = [
        '/bin/bash shell.sh'
+   ]
+   ```
+
+   - The [asfrun plugin](./asfrun.py) also runs shell scripts during finalization
+
+   ```yaml
+   setup:
+     postrun:
+       - /bin/bash postshell.sh
+   ```
+
+   ```python
+   ASF_POSTRUN = [
+       '/bin/bash postshell.sh'
    ]
    ```
 

@@ -365,6 +365,7 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=None, sourcepa
 
     tdata['uses_data'] = None
     tdata['uses_run'] = None
+    tdata['uses_postrun'] = None
     tdata['uses_ignore'] = None
     tdata['uses_copy'] = None
     if 'setup' in ydata:
@@ -375,11 +376,17 @@ def generate_settings(source_yaml, settings_path, builtin_p_paths=None, sourcepa
             tdata['uses_data'] = 'yes'  # ezt.boolean()
             tdata['asfdata'] = sdata['data']
             tdata['use'].append('asfdata')  # add the plugin
-        # Run the included scripts with the asfrun plugin.
+        # Run the included scripts with the asfrun plugin during initialize
         if 'run' in sdata:
             tdata['uses_run'] = 'yes'  # ezt.boolean
             tdata['run'] = sdata['run']
             tdata['use'].append('asfrun')  # add the plugin
+        # Run the included scripts with the asfrun plugin during finalize
+        if 'postrun' in sdata:
+            tdata['uses_postrun'] = 'yes'  # ezt.boolean
+            tdata['postrun'] = sdata['postrun']
+            if not 'run' in sdata:
+                tdata['use'].append('asfrun')  # add the plugin (if not already added)
         # Ignore files avoids copying these files to output.
         if 'ignore' in sdata:
             tdata['uses_ignore'] = 'yes'  # ezt.boolean

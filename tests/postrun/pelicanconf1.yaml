@@ -1,0 +1,16 @@
+site:
+  name: Apache Software Foundation
+  domain: test.apache.org
+  logo: None
+  repository: None
+  description: Test run command
+  trademarks: Apache, the Apache feather logo are trademarks
+
+theme: theme/apache
+
+plugins:
+  use: []
+
+setup:
+  run:
+    - /bin/bash run.sh
