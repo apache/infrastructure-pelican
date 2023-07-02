@@ -125,7 +125,7 @@ def alpha_part(reference, part):
         reference[refs]['letter'] = letter
 
 
-# rotate a roster list singleton into an name and availid
+# convert a list singleton into an name and availid (e.g. chair and roster for officer positions)
 def asfid_part(reference, part):
     for refs in reference:
         fix = reference[refs][part]
