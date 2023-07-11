@@ -6,7 +6,7 @@
 #
 
 invoked=`dirname $0`
-absdir=`cd $invoked ; pwd`
+absdir=`realpath $invoked`
 bindir=`dirname $absdir`/bin
 #echo $bindir
 
@@ -24,10 +24,10 @@ cd $source
 git checkout $branch
 
 # Now build the site into /tmp/$project/
-$bindir/buildsite.py --project $project --source $source --sourcebranch $branch
+$bindir/buildsite.py git --project $project --source $source --sourcebranch $branch || exit 1
 
 # Switch to what the current/prior website looks like
 git checkout asf-site
 
 # Give a quick summary of old/new site
-diff -rq output /tmp/$project/build/output
+diff -rq output /tmp/$project/source/output
