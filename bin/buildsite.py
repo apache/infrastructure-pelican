@@ -219,6 +219,8 @@ except Exception: # TODO: narrow further to expected Exceptions
         if IS_PRODUCTION:
             print('- Pushing changes, for publishing')
             subprocess.run((GIT, 'push', args.source, args.outputbranch), check=True)
+        else:
+            print('- NOT ON PRODUCTION. NOT PUSHED.')
 
         print('Success. Done.')
     # for dev/test provide viewing instructions
