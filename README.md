@@ -3,7 +3,7 @@ Title: README
 ## Tools for using Pelican at the ASF
 
 The infrastructure-pelican repository provides a customized process
-for working with Pelican-based websites at the ASF. 
+for working with Pelican-based websites at the ASF.
 
 See the <a href="https://infra.apache.org/asf-pelican-gettingstarted.html" target="_blank">getting started guide</a> for working with the ASF Pelican template.
 

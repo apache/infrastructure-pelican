@@ -72,6 +72,7 @@ class GFMReader(pelican.readers.BaseReader):
 
             # Extract the metadata from the header of the text
             lines = text.splitlines()
+            i = 0 # See https://github.com/apache/infrastructure-pelican/issues/70
             for i in range(len(lines)):
                 line = lines[i]
                 match = GFMReader.RE_METADATA.match(line)
@@ -108,15 +109,15 @@ class GFMReader(pelican.readers.BaseReader):
 
         # read metadata and markdown content
         text, metadata = self.read_source(source_path)
-        assert text
-        assert metadata
+        assert text, 'Text must not be empty'
+        assert metadata, 'Metadata must not be empty'
         # Render the markdown into HTML
         if sys.version_info >= (3, 0):
             text = text.encode('utf-8')
             content = self.render(text).decode('utf-8')
         else:
             content = self.render(text)
-        assert content
+        assert content, 'Did not expect content to be empty'
 
         return content, metadata
 
@@ -125,7 +126,6 @@ class GFMReader(pelican.readers.BaseReader):
         return pycmarkgfm.gfm_to_html(text.decode("utf-8"),
                                       options=pycmarkgfm.options.unsafe,
                                       ).encode("utf-8")
-
 
 
 def add_readers(readers):

@@ -48,6 +48,8 @@ FIXUP_HTML = [
     (re.compile(r'&gt;'), '>'),
 ]
 
+REQUESTS_TIMEOUT = 5 # timeout for requests calls
+
 # Format of svn ls -v output: Jan 1 1970
 SVN_DATE_FORMAT = "%b %d %Y"
 
@@ -78,7 +80,8 @@ def load_data(path, content, debug):
 
 # load data source from a url.
 def url_data(url, debug):
-    return load_data( url, requests.get(url).text, debug)
+    print("url_data",url, debug)
+    return load_data( url, requests.get(url, timeout=REQUESTS_TIMEOUT).text, debug)
 
 
 # load data source from a file.
@@ -122,7 +125,7 @@ def alpha_part(reference, part):
         reference[refs]['letter'] = letter
 
 
-# rotate a roster list singleton into an name and availid
+# convert a list singleton into an name and availid (e.g. chair and roster for officer positions)
 def asfid_part(reference, part):
     for refs in reference:
         fix = reference[refs][part]
@@ -141,7 +144,7 @@ def add_logo(reference, part):
         # the logo pattern includes a place to insert the project/podling key
         logo = (parts[0].format(item.key_id))
         # HEAD request
-        response = requests.head('https://www.apache.org/' + logo)
+        response = requests.head('https://www.apache.org/' + logo, timeout=REQUESTS_TIMEOUT)
         if response.status_code != 200:
             # logo not found - use the default logo
             logo = parts[1]
@@ -342,9 +345,9 @@ def process_sequence(metadata, seq, sequence, load, debug):
     if save_metadata:
         metadata[seq] = reference
         try:
-          metadata[f'{seq}_size'] = len(reference)
+            metadata[f'{seq}_size'] = len(reference)
         except TypeError: # allow for integer
-          pass
+            pass
 
 
 # create metadata sequences and dictionaries from a data load
@@ -517,15 +520,17 @@ def truncate_words(text, words):
 def process_blog(feed, count, words, debug):
     if debug:
         print(f'blog feed: {feed}')
-    content = requests.get(feed).text
     # See INFRA-23636: cannot check the page status, so just catch parsing errors
     try:
+        content = requests.get(feed, timeout=REQUESTS_TIMEOUT).text
         dom = xml.dom.minidom.parseString(content)
         # dive into the dom to get 'entry' elements
         entries = dom.getElementsByTagName('entry')
         # we only want count many from the beginning
         entries = entries[:count]
     except xml.parsers.expat.ExpatError:
+        entries = []
+    except requests.exceptions.ConnectionError:
         entries = []
     v = [ ]
     for entry in entries:
@@ -569,7 +574,7 @@ def twitter_auth():
 
 # retrieve from twitter
 def connect_to_endpoint(url, headers):
-    response = requests.request('GET', url, headers=headers)
+    response = requests.request('GET', url, headers=headers, timeout=REQUESTS_TIMEOUT)
     if response.status_code != 200:
         raise Exception(response.status_code, response.text)
     return response.json()
@@ -590,7 +595,11 @@ def process_twitter(handle, count, debug):
     tweet_fields = 'tweet.fields=author_id'
     url = f'https://api.twitter.com/2/tweets/search/recent?query={query}&{tweet_fields}'
     headers = {'Authorization': f'Bearer {bearer_token}'}
-    load = connect_to_endpoint(url, headers)
+    try:
+        load = connect_to_endpoint(url, headers)
+    except Exception as e:
+        print(f'ERROR: Cannot connect to Twitter for {handle}: {e}')
+        return sequence_list('twitter',[{ 'text': 'Cannot connect to Twitter at present' }])
     result_count = load['meta']['result_count']
     if result_count == 0:
         print(f'WARN: No recent tweets for {handle}')
@@ -614,7 +623,7 @@ def process_eccn(fname, debug):
     if debug:
         print('-----\nECCN:', fname)
     if fname.startswith("https://"):
-        j = yaml.safe_load(requests.get(fname).text)
+        j = yaml.safe_load(requests.get(fname, timeout=REQUESTS_TIMEOUT).text)
     else:
         j = yaml.safe_load(open(fname))
 
@@ -785,7 +794,8 @@ def config_read_data(pel_ob):
     for key in metadata:
         if debug:
             print(f'metadata[{key}] =')
-            print(metadata[key])
+            pp = pprint.PrettyPrinter(indent=2)
+            pp.pprint(metadata[key])
             print('-----')
         elif isinstance(metadata[key], str):
             print(f'metadata[{key}] = "{metadata[key]}"')

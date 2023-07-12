@@ -21,19 +21,13 @@
 #
 
 import sys
-import subprocess
-import shlex
-import io
 import os
 import os.path
 import traceback
 
 import pelican.plugins.signals
 import pelican.settings
-from pelican.contents import Article, Page, Static
-from pelican.generators import (ArticlesGenerator,  # noqa: I100
-                                PagesGenerator, SourceFileGenerator,
-                                StaticGenerator, TemplatePagesGenerator)
+from pelican.generators import PagesGenerator
 
 
 # get setting
@@ -65,13 +59,13 @@ def get_pages(generators):
     for g in generators:
         if isinstance(g, PagesGenerator):
             for p in g.pages:
-                # use an absolute path 
+                # use an absolute path
                 save_as = '/' + p.save_as
                 if save_as.endswith('/index.html'):
                     # use "/" for the filename of index.html files assuring that they are first in a folder's list
                     save_as = save_as[:-10]
                 # extract the path name
-                path, page = os.path.split(save_as)
+                path, _page = os.path.split(save_as)
                 site_index.append((path, save_as, p.title))
     site_index.sort()
     return site_index
@@ -88,7 +82,7 @@ def get_index(site_index, scope):
     if scope != '**':
         scoped = True
     for p in site_index:
-        path, page = os.path.split(p[0])
+        _path, page = os.path.split(p[0])
         folder = page.capitalize()
         if not scoped or (scoped and p[0].startswith(scope)):
             if folder != current_folder:

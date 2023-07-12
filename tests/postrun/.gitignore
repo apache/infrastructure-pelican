@@ -1,0 +1,4 @@
+site-generated/*
+temp/*
+pelican.auto.py
+pelicanconf.yaml

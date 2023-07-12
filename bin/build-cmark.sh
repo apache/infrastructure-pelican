@@ -21,7 +21,7 @@ if [ "$1" != "" ]; then VERSION="$1"; fi
 TARDIR="."
 if [ "$2" != "" ]; then TARDIR="$2"; fi
 
-ARCHIVES="https://github.com/github/cmark/archive"
+ARCHIVES="https://github.com/github/cmark-gfm/archive/refs/tags"
 LOCAL="${TARDIR}/cmark-gfm.$VERSION.orig.tar.gz"
 
 # WARNING: this must agree with the parent directory in the tar file or the build will fail

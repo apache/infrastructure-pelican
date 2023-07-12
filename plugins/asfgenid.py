@@ -124,12 +124,12 @@ class HtmlTreeNode(object):
 
 
 # assure configuration
-def init_default_config(pelican):
+def init_default_config(pel_obj):
     from pelican.settings import DEFAULT_CONFIG
 
     DEFAULT_CONFIG.setdefault('ASF_GENID', ASF_GENID)
-    if(pelican):
-        pelican.settings.setdefault('ASF_GENID', ASF_GENID)
+    if(pel_obj):
+        pel_obj.settings.setdefault('ASF_GENID', ASF_GENID)
 
 
 # from Apache CMS markdown/extensions/headerid.py - slugify in the same way as the Apache CMS
@@ -164,7 +164,7 @@ def permalink(soup, mod_element):
 
 # fixup cmark content - note that this may be too hungry. It may need to occur later and skipped in codeblock and pre tags.
 def fixup_content(content):
-    text = content._content
+    text = content._content # pylint: disable=protected-access
     modified = False
     # Find messed up html
     for regex, replace in FIXUP_UNSAFE:
@@ -173,7 +173,7 @@ def fixup_content(content):
             modified = True
             text = re.sub(regex, replace, text)
     if modified:
-        content._content = text
+        content._content = text # pylint: disable=protected-access
 
 
 # expand metadata found in {{ key }}
@@ -283,7 +283,7 @@ def make_breadcrumbs(rel_source_path, title):
     parts = rel_source_path.split('/')
     url = '/'
     crumbs = []
-    crumbs.append(f'<a href="/">Home</a>&nbsp;&raquo&nbsp;')
+    crumbs.append('<a href="/">Home</a>&nbsp;&raquo&nbsp;')
     # don't process the filename part
     last = len(parts)-1
     for i in range(last):
@@ -292,7 +292,7 @@ def make_breadcrumbs(rel_source_path, title):
         crumbs.append(f'<a href="{url}">{p}</a>&nbsp;&raquo&nbsp;')
     crumbs.append(f'<a href="#">{title}</a>')
     return ''.join(crumbs)
-    
+
 
 # add the asfdata metadata into GFM content.
 def add_data(content):
@@ -332,7 +332,7 @@ def generate_id(content):
 
     # step 2 - prepare for genid processes
     # parse html content into BeautifulSoup4
-    soup = BeautifulSoup(content._content, 'html.parser')
+    soup = BeautifulSoup(content._content, 'html.parser') # pylint: disable=protected-access
     # page title
     title = content.metadata.get('title', 'Title')
     # assure relative source path is in the metadata
@@ -389,7 +389,7 @@ def generate_id(content):
             generate_toc(content, tags, title, asf_genid['toc_headers'], asf_genid['debug'])
 
     # step 9 - reset the html content
-    content._content = soup.decode(formatter='html')
+    content._content = soup.decode(formatter='html')  # pylint: disable=protected-access
 
     # step 10 - output all of the permalinks created
     if asf_genid['debug']:
@@ -397,13 +397,13 @@ def generate_id(content):
             print(f'    #{tag}')
 
 
-def tb_connect(pel_ob):
+def tb_connect(content_obj):
     """Print any exception, before Pelican chews it into nothingness."""
     try:
-        generate_id(pel_ob)
+        generate_id(content_obj)
     except Exception:
         print('-----', file=sys.stderr)
-        print('FATAL: %s' % (pel_ob.relative_source_path), file=sys.stderr)
+        print('FATAL: %s' % (content_obj.relative_source_path), file=sys.stderr)
         traceback.print_exc()
         # if we have errors in this module then we want to quit to avoid erasing the site
         sys.exit(4)
@@ -411,6 +411,4 @@ def tb_connect(pel_ob):
 
 def register():
     pelican.plugins.signals.initialized.connect(init_default_config)
-
-
-pelican.plugins.signals.content_object_init.connect(tb_connect)
+    pelican.plugins.signals.content_object_init.connect(tb_connect)

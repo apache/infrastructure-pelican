@@ -1,0 +1,42 @@
+name: Unit test issue62 - correct metadata types
+on:
+  push:
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        # Not sure it's worth testing on multiple Pythons
+        python-version: [3.8]
+    steps:
+    - uses: actions/checkout@master
+      with:
+        persist-credentials: false
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pelican[Markdown]==4.5.4
+        pip install -r requirements.txt
+        pip install 'MarkupSafe<2.1.0' # needed for Pelican 4.5.4
+    - name: Build GFM
+      run: |
+        bin/build-cmark.sh | grep LIBCMARKDIR > libcmark.sh
+    - name: Run test
+      run: |
+        source libcmark.sh
+        cd tests/issue62
+        echo "This is currently expected to fail with:"
+        echo " ERROR: Could not process ./one.md"
+        echo "     | 'str' object has no attribute 'tzinfo'"
+        ./compare_meta.sh

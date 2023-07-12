@@ -17,9 +17,10 @@
 # under the License.
 #
 #
-# asfshell.py - Pelican plugin that runs shell scripts during initialization
+# asfrun.py - Pelican plugin that runs shell scripts during initialization or finalization
 #
 
+import os
 import sys
 import subprocess
 import shlex
@@ -30,20 +31,27 @@ import pelican.settings
 
 
 # open a subprocess
-def os_run(args):
-    return subprocess.Popen(args, stdout=subprocess.PIPE, universal_newlines=True)
-
+def os_run(args, env=None):
+    return subprocess.Popen(args, env=env, stdout=subprocess.PIPE, universal_newlines=True)
 
 # run shell
-def run_script(pel_ob):
-    asf_run = pel_ob.settings.get('ASF_RUN')
-    if asf_run:
-        print('-----\nasfshell')
-        for command in asf_run:
+def run_script(pel_ob, command_source, env=False):
+    commands = pel_ob.settings.get(command_source)
+    if commands:
+        print(f'-----\nasfrun {command_source}')
+        if env:
+            # copy the pelican environment into the OS env
+            my_env = os.environ.copy()
+            for k, v in sorted(pel_ob.settings.items()):
+                if k != 'ASF_DATA': # rather large; not needed
+                    my_env['PELICAN_'+k] = str(v)
+        else:
+            my_env = None
+        for command in commands:
             print(f'-----\n{command}')
             args = shlex.split(command)
             print(args)
-            with os_run(args) as s:
+            with os_run(args, my_env) as s:
                 for line in s.stdout:
                     line = line.strip()
                     print(f'{line}')
@@ -52,7 +60,17 @@ def run_script(pel_ob):
 def tb_initialized(pel_ob):
     """ Print any exception, before Pelican chews it into nothingness."""
     try:
-        run_script(pel_ob)
+        run_script(pel_ob, 'ASF_RUN')
+    except Exception:
+        print('-----', file=sys.stderr)
+        traceback.print_exc()
+        # exceptions here stop the build
+        raise
+
+def tb_finalized(pel_ob):
+    """ Print any exception, before Pelican chews it into nothingness."""
+    try:
+        run_script(pel_ob, 'ASF_POSTRUN', env=True)
     except Exception:
         print('-----', file=sys.stderr)
         traceback.print_exc()
@@ -62,3 +80,4 @@ def tb_initialized(pel_ob):
 
 def register():
     pelican.plugins.signals.initialized.connect(tb_initialized)
+    pelican.plugins.signals.finalized.connect(tb_finalized)

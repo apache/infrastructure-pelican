@@ -26,28 +26,28 @@ https://github.com/waylan/Python-Markdown/blob/master/markdown/extensions/header
 IDCOUNT_RE = re.compile(r'^(.*)_([0-9]+)$')
 
 
-def unique(id, ids):
+def unique(id_, ids):
     """ Ensure id is unique in set of ids. Append '_1', '_2'... if not """
-    while id in ids or not id:
-        m = IDCOUNT_RE.match(id)
+    while id_ in ids or not id_:
+        m = IDCOUNT_RE.match(id_)
         if m:
-            id = '%s_%d' % (m.group(1), int(m.group(2)) + 1)
+            id_ = '%s_%d' % (m.group(1), int(m.group(2)) + 1)
         else:
-            id = '%s_%d' % (id, 1)
-    ids.add(id)
-    return id
+            id_ = '%s_%d' % (id_, 1)
+    ids.add(id_)
+    return id_
 '''
 end
 '''
 
 
 class HtmlTreeNode(object):
-    def __init__(self, parent, header, level, id):
+    def __init__(self, parent, header, level, id_):
         self.children = []
         self.parent = parent
         self.header = header
         self.level = level
-        self.id = id
+        self.id = id_
 
     def add(self, new_header, ids):
         new_level = new_header.name
@@ -95,7 +95,7 @@ class HtmlTreeNode(object):
         return ret
 
 
-def init_default_config(pelican):
+def init_default_config(pel_ob):
     from pelican.settings import DEFAULT_CONFIG
 
     TOC_DEFAULT = {
@@ -104,8 +104,8 @@ def init_default_config(pelican):
     }
 
     DEFAULT_CONFIG.setdefault('TOC', TOC_DEFAULT)
-    if(pelican):
-        pelican.settings.setdefault('TOC', TOC_DEFAULT)
+    if(pel_ob):
+        pel_ob.settings.setdefault('TOC', TOC_DEFAULT)
 
 
 def generate_toc(content):
@@ -115,14 +115,14 @@ def generate_toc(content):
     all_ids = set()
     title = content.metadata.get('title', 'Title')
     tree = node = HtmlTreeNode(None, title, 'h0', '')
-    soup = BeautifulSoup(content._content, 'html.parser')
+    soup = BeautifulSoup(content._content, 'html.parser') # pylint: disable=protected-access
     settoc = False
 
     try:
         header_re = re.compile(content.metadata.get(
             'toc_headers', content.settings['TOC']['TOC_HEADERS']))
     except re.error as e:
-        logger.error("TOC_HEADERS '%s' is not a valid re\n%s",
+        logger.error("TOC_HEADERS '%s' is not a valid re\n",
                      content.settings['TOC']['TOC_HEADERS'])
         raise e
 
@@ -133,7 +133,7 @@ def generate_toc(content):
             settoc = True
             node, new_header = node.add(header, all_ids)
             header.replaceWith(new_header)  # to get our ids back into soup
-    
+
         if settoc:
             print("Generating ToC for %s" % content.slug)
             tree_string = '{}'.format(tree)
@@ -142,10 +142,10 @@ def generate_toc(content):
             itoc = soup.find('p', text = '[TOC]')
             if itoc:
                 itoc.replaceWith(tree_soup)
-            
-        content._content = soup.decode(formatter='html')
+
+        content._content = soup.decode(formatter='html')  # pylint: disable=protected-access
 
 
 def register():
     signals.initialized.connect(init_default_config)
-signals.content_object_init.connect(generate_toc)
+    signals.content_object_init.connect(generate_toc)

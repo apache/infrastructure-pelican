@@ -1,0 +1,17 @@
+ci1:
+  # load, transform, and create data sequences from committee info 
+  url: https://whimsy.apache.org/public/committee-info.json
+  officers:
+    description: 'Foundation Officers sequence'
+    # select ci['officers'] for the sequence
+    path: officers
+    # convert ci['officers']['roster']
+    asfid: roster
+ci2:
+  # load, transform, and create data sequences from committee info 
+  url: https://whimsy.apache.org/public/committee-info.json
+  ci:
+    # used on /foundation/
+    description: 'Dictionary of officers and committees'
+    # save a merged dictionary version of these sequences.
+    dictionary: officers

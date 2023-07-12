@@ -38,6 +38,7 @@ import re
 # List of subdomains deemed safe for spu:fetch()
 SPU_FETCH_SAFE_DOMAINS = ("*.apache.org",)
 
+REQUESTS_TIMEOUT = 5 # timeout for requests calls
 
 def spu_cmd_fetch(args: list):
     """Fetches an external URL and put the content where the call was made"""
@@ -46,7 +47,7 @@ def spu_cmd_fetch(args: list):
     is_safe = any(fnmatch.fnmatch(url_parsed.netloc, pattern) for pattern in SPU_FETCH_SAFE_DOMAINS)
     if is_safe:
         print("Fetching external resource " + url)
-        return requests.get(url).text
+        return requests.get(url, timeout=REQUESTS_TIMEOUT).text
     else:
         print("Not fetching unsafe external resource " + url)
         return ""
@@ -63,11 +64,11 @@ def spu_sub(call):
 
 
 def spu_parse(instance: pelican.contents.Page):
-    if instance._content is not None:
-        instance._content = re.sub(
+    if instance._content is not None:  # pylint: disable=protected-access
+        instance._content = re.sub( # pylint: disable=protected-access
             r"<code>\s*spu:([_a-z]+)\(((?:(['\"]?)(.*?)\3(?:,\s*)?)*)\s*?\)\s*<\/code>",
             spu_sub,
-            instance._content,
+            instance._content, # pylint: disable=protected-access
             flags=re.UNICODE,
         )
 
