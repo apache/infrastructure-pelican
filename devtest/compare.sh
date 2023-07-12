@@ -5,6 +5,8 @@
 #   ./compare.sh gora ~/src/asf/gora-site main
 #
 
+set -x
+
 invoked="`dirname $0`"
 absdir="`realpath $invoked`"
 bindir="`dirname $absdir`/bin"
@@ -13,8 +15,6 @@ bindir="`dirname $absdir`/bin"
 project="$1"
 source="$2"  # URL or pathname to a local clone
 branch="$3"
-
-set -x
 
 ### maybe skip if already defined in ENV?
 export LIBCMARKDIR=/tmp/cm/cmark-gfm-0.28.3.gfm.12/lib
@@ -31,4 +31,4 @@ git checkout "$branch"
 git checkout asf-site
 
 # Give a quick summary of old/new site
-diff -rq output "/tmp/$project/source/output"
+diff -rq "$source/output" "/tmp/$project/source/output"
