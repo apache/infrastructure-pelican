@@ -134,11 +134,18 @@ def start_build(args):
     else:
         # The default name, but we'll pass it explicitly.
         settings_path = os.path.join(sourcepath, PELICAN_CONF)
+        #print('SETTINGS_PATH:', settings_path)
 
+        if args.plugins:
+            ppaths = (f'PLUGIN_PATHS=["{args.plugins}",'
+                      f'   "{sourcepath}/theme/plugins"]')
+        else:
+            ppaths = ''
         # Set currently supported plugins
         ### this needs to be removed, as it is too indeterminate.
         with open(settings_path, 'a') as f:
-            f.write("""
+            f.write(f"""
+{ppaths}
 try:
     PLUGINS += ['toc']
 except Exception: # TODO: narrow further to expected Exceptions
@@ -458,6 +465,7 @@ def main():
     parser_git.add_argument("--listen", help = "Start pelican -l after build (default: %(default)s)", action = "store_true")
     parser_git.add_argument("--debug", help = "Run pelican with debug flag (show full exception traces)", action = "store_true")
     parser_git.add_argument("--delete", help = "Delete output directory first", action = "store_true")
+    parser_git.add_argument("--plugins", help = "Directory for global plugins")
     parser_git.set_defaults(func=locked_build)
 
     parser_dir = subparsers.add_parser("dir", help = "Build source in current directory and optionally serve the result")

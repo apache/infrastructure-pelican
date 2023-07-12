@@ -25,7 +25,7 @@ cd "$source"
 git checkout "$branch"
 
 # Now build the site into /tmp/$project/
-"$bindir/buildsite.py" git --project "$project" --source "$source" --sourcebranch "$branch" || exit 1
+"$bindir/buildsite.py" git --project "$project" --source "$source" --sourcebranch "$branch" --plugins "$absdir"/plugins || exit 1
 
 # Switch to what the current/prior website looks like
 git checkout asf-site
