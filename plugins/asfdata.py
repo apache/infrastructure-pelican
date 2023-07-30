@@ -584,6 +584,12 @@ def connect_to_endpoint(url, headers):
 def process_twitter(handle, count, debug):
     if debug:
         print(f'-----\ntwitter feed: {handle}')
+    # Disable processing if count <= 0
+    if count <= 0:
+        print('WARN: Twitter disabled; count <= 0')
+        return sequence_list('twitter',[{
+            'text': 'Twitter processing is disabled (count <= 0)'
+        }])
     bearer_token = twitter_auth()
     if not bearer_token:
         print('WARN: no bearer token for Twitter')
