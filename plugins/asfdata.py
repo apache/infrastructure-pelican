@@ -144,9 +144,12 @@ def add_logo(reference, part):
         # the logo pattern includes a place to insert the project/podling key
         logo = (parts[0].format(item.key_id))
         # HEAD request
-        response = requests.head('https://www.apache.org/' + logo, timeout=REQUESTS_TIMEOUT)
-        if response.status_code != 200:
-            # logo not found - use the default logo
+        try:
+            response = requests.head('https://www.apache.org/' + logo, timeout=REQUESTS_TIMEOUT)
+            if response.status_code != 200:
+                # logo not found - use the default logo
+                logo = parts[1]
+        except requests.exceptions.Timeout:
             logo = parts[1]
         # save the logo path as an attribute
         setattr(item, 'logo', logo)
@@ -530,7 +533,7 @@ def process_blog(feed, count, words, debug):
         entries = entries[:count]
     except xml.parsers.expat.ExpatError:
         entries = []
-    except requests.exceptions.ConnectionError:
+    except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
         entries = []
     v = [ ]
     for entry in entries:
