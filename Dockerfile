@@ -66,9 +66,10 @@ RUN apt update && apt upgrade -y
 # git is used by `buildsite.py git`
 RUN apt install git -y
 # subversion is used by asfdata.py plugin in template-site to retrieve release information
-RUN apt install subversion -y
+# wget is used by pagefind.sh (www-site)
+RUN apt install subversion wget -y
 # we likely do not need the following
-# RUN apt install wget unzip fontconfig -y
+# RUN apt install unzip fontconfig -y
 
 # Use the Pelican version as installed on CI pelican builders (2023-06-02)
 ARG PELICAN_VERSION=4.5.4
