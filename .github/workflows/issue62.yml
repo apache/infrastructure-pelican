@@ -1,6 +1,7 @@
 name: Unit test issue62 - correct metadata types
 on:
   push:
+    branch: main
 
   workflow_dispatch:
 

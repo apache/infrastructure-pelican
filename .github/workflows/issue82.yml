@@ -1,6 +1,7 @@
 name: Unit test issue82 - asfdata corrupts output
 on:
   push:
+    branch: main
 
   workflow_dispatch:
 
