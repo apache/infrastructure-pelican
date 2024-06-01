@@ -581,7 +581,7 @@ def connect_to_endpoint(url, headers):
     response = requests.request('GET', url, headers=headers, timeout=REQUESTS_TIMEOUT)
     if response.status_code != 200:
         # TODO: choose better exception
-        raise Exception(response.status_code, response.text) # pylint: broad-exception-raised
+        raise Exception(response.status_code, response.text) # pylint: disable-broad-exception-raised
     return response.json()
 
 
