@@ -43,7 +43,7 @@
 ARG PYTHON_VERSION=3.8.10
 
 # Build basic Pelican image
-FROM python:${PYTHON_VERSION}-slim-buster as pelican-asf
+FROM python:${PYTHON_VERSION}-slim-buster AS pelican-asf
 
 RUN apt update && apt upgrade -y
 RUN apt install curl cmake build-essential -y
