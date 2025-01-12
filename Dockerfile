@@ -45,8 +45,8 @@ ARG PYTHON_VERSION=3.8.10
 # Build basic Pelican image
 FROM python:${PYTHON_VERSION}-slim-buster AS pelican-asf
 
-RUN apt update && apt upgrade -y
-RUN apt install curl cmake build-essential -y
+RUN apt-get update && apt-get upgrade -y
+RUN apt-get install curl cmake build-essential -y
 
 # Copy the current ASF code
 WORKDIR /tmp/pelican-asf
@@ -62,14 +62,14 @@ RUN ./bin/build-cmark.sh | grep LIBCMARKDIR > LIBCMARKDIR.sh
 FROM python:${PYTHON_VERSION}-slim-buster
 
 
-RUN apt update && apt upgrade -y
+RUN apt-get update && apt-get upgrade -y
 # git is used by `buildsite.py git`
-RUN apt install git -y
+RUN apt-get install git -y
 # subversion is used by asfdata.py plugin in template-site to retrieve release information
 # wget is used by pagefind.sh (www-site)
-RUN apt install subversion wget -y
+RUN apt-get install subversion wget -y
 # we likely do not need the following
-# RUN apt install unzip fontconfig -y
+# RUN apt-get install unzip fontconfig -y
 
 # Use the Pelican version as installed on CI pelican builders (2023-06-02)
 ARG PELICAN_VERSION=4.5.4
