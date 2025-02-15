@@ -23,97 +23,12 @@
 
 import sys
 import os.path
-import ctypes
 import re
-import platform
 
 import pelican.utils
 import pelican.plugins.signals
 import pelican.readers
-
-_LIBDIR = os.environ['LIBCMARKDIR']
-if platform.system() == 'Darwin':
-    _LIBEXT = '.dylib'
-else:
-    _LIBEXT = '.so'
-_LIBCMARK = f'libcmark-gfm{_LIBEXT}'
-try:
-    cmark = ctypes.CDLL(os.path.join(_LIBDIR, _LIBCMARK))
-except OSError as e:
-    raise ImportError('%s not found. See build-cmark.sh. Error:\n%s' % (_LIBCMARK, e))
-
-# Newer releases have different naming for this library. Try it first.
-try:
-    cmark_ext = ctypes.CDLL(os.path.join(_LIBDIR, f'libcmark-gfm-extensions{_LIBEXT}'))
-    ENSURE_REGISTERED = 'cmark_gfm_core_extensions_ensure_registered'
-except OSError:
-    # Try the older name for the library.
-    try:
-        cmark_ext = ctypes.CDLL(os.path.join(_LIBDIR, f'libcmark-gfmextensions{_LIBEXT}'))
-        ENSURE_REGISTERED = 'core_extensions_ensure_registered'
-    except OSError:
-        #print('LIBDIR:', _LIBDIR)
-        raise ImportError('GFM Extensions not found. See build-cmark.sh')
-#print(f'USING: {ENSURE_REGISTERED}')
-
-
-# Use ctypes to access the functions in libcmark-gfm
-F_cmark_parser_new = cmark.cmark_parser_new
-F_cmark_parser_new.restype = ctypes.c_void_p
-F_cmark_parser_new.argtypes = (ctypes.c_int,)
-
-F_cmark_parser_feed = cmark.cmark_parser_feed
-F_cmark_parser_feed.restype = None
-F_cmark_parser_feed.argtypes = (ctypes.c_void_p, ctypes.c_char_p, ctypes.c_size_t)
-
-F_cmark_parser_finish = cmark.cmark_parser_finish
-F_cmark_parser_finish.restype = ctypes.c_void_p
-F_cmark_parser_finish.argtypes = (ctypes.c_void_p,)
-
-F_cmark_parser_attach_syntax_extension = cmark.cmark_parser_attach_syntax_extension
-F_cmark_parser_attach_syntax_extension.restype = ctypes.c_int
-F_cmark_parser_attach_syntax_extension.argtypes = (ctypes.c_void_p, ctypes.c_void_p)
-
-F_cmark_parser_get_syntax_extensions = cmark.cmark_parser_get_syntax_extensions
-F_cmark_parser_get_syntax_extensions.restype = ctypes.c_void_p
-F_cmark_parser_get_syntax_extensions.argtypes = (ctypes.c_void_p,)
-
-F_cmark_parser_free = cmark.cmark_parser_free
-F_cmark_parser_free.restype = None
-F_cmark_parser_free.argtypes = (ctypes.c_void_p,)
-
-F_cmark_node_free = cmark.cmark_node_free
-F_cmark_node_free.restype = None
-F_cmark_node_free.argtypes = (ctypes.c_void_p,)
-
-F_cmark_find_syntax_extension = cmark.cmark_find_syntax_extension
-F_cmark_find_syntax_extension.restype = ctypes.c_void_p
-F_cmark_find_syntax_extension.argtypes = (ctypes.c_char_p,)
-
-F_cmark_render_html = cmark.cmark_render_html
-F_cmark_render_html.restype = ctypes.c_char_p
-F_cmark_render_html.argtypes = (ctypes.c_void_p, ctypes.c_int, ctypes.c_void_p)
-
-
-# Set up the libcmark-gfm library and its extensions
-F_register = getattr(cmark_ext, ENSURE_REGISTERED)
-F_register.restype = None
-F_register.argtypes = ( )
-F_register()
-
-### technically, maybe install an atexit() to release the plugins
-
-# Options for the GFM rendering call
-### this could be moved into SETTINGS or somesuch, but meh. not needed now.
-OPTS = 0
-
-# The GFM extensions that we want to use
-EXTENSIONS = (
-    'autolink',
-    'table',
-    'strikethrough',
-    'tagfilter',
-)
+import pycmarkgfm.options
 
 
 class GFMReader(pelican.readers.BaseReader):
@@ -208,25 +123,9 @@ class GFMReader(pelican.readers.BaseReader):
 
     def render(self, text):
         "Use cmark-gfm to render the Markdown into an HTML fragment."
-
-        parser = F_cmark_parser_new(OPTS)
-        assert parser, 'Failed to initialise parser'
-        for name in EXTENSIONS:
-            ext = F_cmark_find_syntax_extension(name.encode('utf-8'))
-            assert ext, 'Failed to find UTF-8 extension'
-            rv = F_cmark_parser_attach_syntax_extension(parser, ext)
-            assert rv, 'Failed to attach the UTF-8 extension'
-        exts = F_cmark_parser_get_syntax_extensions(parser)
-        F_cmark_parser_feed(parser, text, len(text))
-        doc = F_cmark_parser_finish(parser)
-        assert doc, 'Did not expect rendered output to be empty'
-
-        output = F_cmark_render_html(doc, OPTS, exts)
-
-        F_cmark_parser_free(parser)
-        F_cmark_node_free(doc)
-
-        return output
+        return pycmarkgfm.gfm_to_html(text.decode("utf-8"),
+                                      options=pycmarkgfm.options.unsafe,
+                                      ).encode("utf-8")
 
 
 def add_readers(readers):

@@ -9,3 +9,4 @@ idna # needed by requests
 charset-normalizer # needed by requests
 urllib3 # needed by requests
 requests # needed by kick_build.py and asfdata.py
+pycmarkgfm # GitHub Flavored Markdown renderer
