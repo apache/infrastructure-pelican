@@ -1,7 +1,7 @@
 name: Unit test issue82 - asfdata corrupts output
 on:
-  push:
-
+  # disabled automatic test: it's not clear if the behaviour is intentional
+  # see https://github.com/apache/infrastructure-pelican/issues/82
   workflow_dispatch:
 
 permissions:
