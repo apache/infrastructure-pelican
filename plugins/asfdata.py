@@ -118,7 +118,7 @@ def partMatches(actual, cond, expected):
         return actual in expected
     if cond == 'notin':
         return actual not in expected
-    raise Exception(f"Unexpected condition {cond}")
+    raise Exception(f"Unexpected condition {cond}") # pylint: disable=broad-exception-raised
 
 # trim out parts of a data source that don't match the part condition (default == True)
 def where_parts(reference, where_clause):
@@ -135,10 +135,10 @@ def where_parts(reference, where_clause):
             expected = items
         else:
             # TODO: choose better exception
-            raise Exception(f"Unexpected condition '{cond}' or extra param: {len(items)}")
+            raise Exception(f"Unexpected condition '{cond}' or extra param: {len(items)}")  # pylint: disable=broad-exception-raised
     else:
         # TODO: choose better exception
-        raise Exception(f"where expects 1 parameter optionally followed by at least 2 parameters") # pylint: disable=broad-exception-raised
+        raise Exception("'where' expects 1 parameter optionally followed by at least 2 parameters") # pylint: disable=broad-exception-raised
     # currently only works on True parts
     # if we trim as we go we invalidate the iterator. Instead create a deletion list.
     filtered = [ ]
