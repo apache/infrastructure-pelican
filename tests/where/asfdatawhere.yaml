@@ -1,0 +1,47 @@
+pods1:
+  url: https://whimsy.apache.org/public/public_podlings.json
+  current_count:
+    path: status_counts.current
+  current:
+    path: podling
+    where: status eq current
+pods2:
+  url: https://whimsy.apache.org/public/public_podlings.json
+  graduated_count:
+    path: status_counts.graduated
+  graduated:
+    path: podling
+    where: status eq graduated
+pods3:
+  url: https://whimsy.apache.org/public/public_podlings.json
+  retired_count:
+    path: status_counts.retired
+  retired:
+    path: podling
+    where: status eq retired
+pods4:
+  url: https://whimsy.apache.org/public/public_podlings.json
+  notretired:
+    path: podling
+    where: status ne retired
+pods5:
+  url: https://whimsy.apache.org/public/public_podlings.json
+  inretiredgraduated:
+    path: podling
+    where: status in retired graduated
+pods5:
+  url: https://whimsy.apache.org/public/public_podlings.json
+  notinretiredgraduated:
+    path: podling
+    where: status notin retired graduated
+ci:
+  url: https://whimsy.apache.org/public/committee-info.json
+  cttee_count:
+    path: committee_count
+  pmc_count:
+    path: pmc_count
+  cttee:
+    path: committees
+  pmc:
+    path: committees
+    where: pmc
