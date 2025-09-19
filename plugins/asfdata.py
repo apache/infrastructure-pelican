@@ -352,7 +352,7 @@ def process_sequence(metadata, seq, sequence, load, debug):
                 # for podlings strip "Apache" from the beginning and "(incubating)" from the end.
                 # this is Sally's request
                 for item in reference:
-                    setattr(item, 'name', ' '.join(item.name.split(' ')[1:-1]))
+                    setattr(item, 'name', item.name.replace('Apache ', '').replace(' (incubating)', ''))
         else:
             print(f'{seq} - logo requires an existing sequence')
 
