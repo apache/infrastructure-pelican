@@ -588,6 +588,7 @@ def process_blog(feed, count, words, debug):
             {
                 'id': get_element_text(entry, 'id'),
                 'title': get_element_text(entry, 'title'),
+                'date': get_element_text(entry, 'published'),
                 'content': content_text
             }
         )
@@ -597,6 +598,7 @@ def process_blog(feed, count, words, debug):
 
     return [ Blog(href=s['id'],
                   title=s['title'],
+                  date=s['date'],
                   content=s['content'])
              for s in v]
 
