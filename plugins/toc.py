@@ -2,9 +2,15 @@
 toc
 ===================================
 Generates Table of Contents for markdown.
-Only generates a ToC for the headers FOLLOWING th [TOC] tag,
+Only generates a ToC for the headers FOLLOWING the [TOC] tag,
 so you can insert it after a specific section that need not be
-include in the ToC.
+included in the ToC.
+
+The default container format (which includes a 'Table of Contents' heading )
+can be overridden by providing something like the following entry in pelicanconf.py:
+ASF_TOC = {
+    'CONTAINER_FORMAT': "<div id='toc'>{}</div>"
+}
 '''
 
 from __future__ import unicode_literals
@@ -56,8 +62,8 @@ class HtmlTreeNode(object):
 
         if not new_string:
             new_string = new_header.find_all(
-                    text=lambda t: not isinstance(t, Comment),
-                    recursive=True)
+                text=lambda t: not isinstance(t, Comment),
+                recursive=True)
             new_string = "".join(new_string)
 
         if not new_id:
@@ -80,11 +86,11 @@ class HtmlTreeNode(object):
         ret = ""
         if self.parent:
             ret = "<a class='toc-href' href='#{0}' title='{1}'>{1}</a>".format(
-                    self.id, self.header)
+                self.id, self.header)
 
         if self.children:
-            ret += "<ul>{}</ul>".format('{}'*len(self.children)).format(
-                    *self.children)
+            ret += "<ul>{}</ul>".format('{}' * len(self.children)).format(
+                *self.children)
 
         if self.parent:
             ret = "<li>{}</li>".format(ret)
@@ -127,7 +133,7 @@ def generate_toc(content):
         raise e
 
     # Find TOC tag
-    tocTag = soup.find('p', text = '[TOC]')
+    tocTag = soup.find('p', text='[TOC]')
     if tocTag:
         for header in tocTag.findAllNext(header_re):
             settoc = True
@@ -139,7 +145,7 @@ def generate_toc(content):
             tree_string = '{}'.format(tree)
             tree_soup = BeautifulSoup(tree_string, 'html.parser')
             content.toc = tree_soup.decode(formatter='html')
-            itoc = soup.find('p', text = '[TOC]')
+            itoc = soup.find('p', text='[TOC]')
             if itoc:
                 itoc.replaceWith(tree_soup)
 
