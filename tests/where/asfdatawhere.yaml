@@ -29,7 +29,7 @@ pods5:
   inretiredgraduated:
     path: podling
     where: status in retired graduated
-pods5:
+pods6:
   url: https://whimsy.apache.org/public/public_podlings.json
   notinretiredgraduated:
     path: podling
