@@ -37,7 +37,4 @@ jobs:
       run: |
         source libcmark.sh
         cd tests/issue62
-        echo "This is currently expected to fail with:"
-        echo " ERROR: Could not process ./one.md"
-        echo "     | 'str' object has no attribute 'tzinfo'"
         ./compare_meta.sh
