@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 #
-# To run this in dev/test, then LIBCMARKDIR must be defined in the
-# environment.
+# To run GFM in dev/test, LIBCMARKDIR must be defined in the environment.
 #
 # $ export LIBCMARKDIR=/path/to/cmark-gfm.0.28.3.gfm.12/lib
 #
@@ -38,10 +37,7 @@ PELICANFILES    = '/home/buildslave/slave/tools'
 SCRATCH_DIR     = '/tmp'
 PLUGINS         = '/opt/infrastructure-pelican/plugins'
 VERSION         = '0.28.3.gfm.12'
-LIBCMARKDIR     = f'/usr/local/asfpackages/cmark-gfm/cmark-gfm-{VERSION}/lib'
-if not os.path.exists(LIBCMARKDIR):
-    # Fail, if a path to the CMARK library is not in ENVIRON.
-    LIBCMARKDIR = os.environ['LIBCMARKDIR']
+DEFAULT_LIBCMARKDIR = f'/usr/local/asfpackages/cmark-gfm/cmark-gfm-{VERSION}/lib'
 THIS_DIR        = os.path.abspath(os.path.dirname(__file__))
 
 IS_PRODUCTION   = os.path.exists(PELICANFILES)
@@ -57,6 +53,11 @@ PELICAN_CONF = 'pelicanconf.py'
 class _helper:
     def __init__(self, **kw):
         vars(self).update(kw)
+
+
+def set_libcmarkdir(env):
+    if os.path.exists(DEFAULT_LIBCMARKDIR):
+        env['LIBCMARKDIR'] = DEFAULT_LIBCMARKDIR
 
 
 def start_build(args):
@@ -166,7 +167,7 @@ except Exception: # TODO: narrow further to expected Exceptions
                 )
     print("Building web site with:", buildcmd)
     env = os.environ.copy()
-    env['LIBCMARKDIR'] = LIBCMARKDIR
+    set_libcmarkdir(env)
     subprocess.run(buildcmd, cwd=path, check=True, env=env)
 
     count = len(glob.glob(f'{buildpath}/**/*.html', recursive=True))
@@ -285,7 +286,7 @@ def build_dir(args):
                 )
     print("Building web site with:", buildcmd)
     env = os.environ.copy()
-    env['LIBCMARKDIR'] = LIBCMARKDIR
+    set_libcmarkdir(env)
     try:
         ### is the cwd_necessary?
         subprocess.run(buildcmd, cwd=auto_dir, check=True, env=env)

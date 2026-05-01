@@ -20,8 +20,6 @@ setup() {
 
 }
 
-export LIBCMARKDIR=Dummy # needed even if gfm not loaded
-
 #=============================
 
 setup pelicanconf1.yaml # This tests run script
