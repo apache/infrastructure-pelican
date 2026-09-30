@@ -32,7 +32,7 @@ import pelican.settings
 
 # open a subprocess
 def os_run(args, env=None):
-    return subprocess.Popen(args, env=env, stdout=subprocess.PIPE, universal_newlines=True)
+    return subprocess.Popen(args, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
 
 # run shell
 def run_script(pel_ob, command_source, env=False):
@@ -55,6 +55,8 @@ def run_script(pel_ob, command_source, env=False):
                 for line in s.stdout:
                     line = line.strip()
                     print(f'{line}')
+            if s.returncode != 0:
+                raise RuntimeError(f'{command} exited with status {s.returncode}')
 
 
 def tb_initialized(pel_ob):

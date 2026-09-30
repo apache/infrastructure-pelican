@@ -15,6 +15,7 @@ setup() {
     cp "$1" pelicanconf.yaml
 
     ../../bin/buildsite.py dir
+    build_status=$?
 
     grep 'ASF_RUN\|ASF_POSTRUN' pelican.auto.py
 
@@ -50,3 +51,8 @@ echo "date2.tmp should exist as copy of date2.txt"
 cmp temp/date2.txt temp/date2.tmp
 
 #=============================
+
+setup pelicanconf4.yaml # This tests a failing run script
+
+echo "the build should have failed"
+test "$build_status" -ne 0 || { echo "the build succeeded!"; exit 1; }
