@@ -32,7 +32,7 @@ import pelican.settings
 
 # open a subprocess
 def os_run(args, env=None):
-    return subprocess.Popen(args, env=env, stdout=subprocess.PIPE, universal_newlines=True)
+    return subprocess.Popen(args, env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
 
 # run shell
 def run_script(pel_ob, command_source, env=False):
